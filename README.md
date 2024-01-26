@@ -16,7 +16,7 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 Template for each widget:
-
+```
 import 'package:flutter/material.dart';
 import './page_template.dart';
 
@@ -28,12 +28,15 @@ class ClassName extends StatefulWidget {
 }
 
 class _ClassNameState extends State<ClassName> {
+
   @override
   Widget build(BuildContext context) {
+  
     return GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
         },
+        
         child: Scaffold(
           backgroundColor: const Color(0xFFF5F5F5),
           appBar: CustomAppBar(),
@@ -52,4 +55,6 @@ class _ClassNameState extends State<ClassName> {
     );
   }
 }
+```
+
 
