@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 
+enum TransportMode { walking, biking, bus, carpooling }
+
 class EPandaHomepage extends StatefulWidget {
   const EPandaHomepage({super.key});
 
@@ -9,15 +11,23 @@ class EPandaHomepage extends StatefulWidget {
 }
 
 class _EPandaHomepageState extends State<EPandaHomepage> {
-  // Widget _buildTransportButton(String mode) {
-  //   return ElevatedButton(
-  //     onPressed: () {
-  //       // Handle transportation mode selection
-  //     },
-  //     child: Text(mode),
-  //   );
-  // }
-// test
+  TransportMode? _selectedMode;
+
+  Widget _buildTransportButton(String mode, TransportMode value) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          _selectedMode = value;
+        });
+        // Add additional logic for transportation mode selection here if needed
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: _selectedMode == value ? Color(0xFF3CC18F) : Colors.blueGrey[50],
+      ),
+      child: Text(mode, style: TextStyle(color: Colors.black),),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -77,7 +87,7 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Text('View Details', style: TextStyle(fontSize: 11)),
+                              Text('View Details', style: TextStyle(fontSize: 12)),
                               Icon(Icons.arrow_forward_ios, size: 16.0),
                             ],
                           ),
@@ -88,7 +98,151 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                       ),
                     ),
                   ),
-
+                  Container(
+                    margin: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Color(0xFFF5FBE5),
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                    child: Card(
+                      margin: EdgeInsets.zero,
+                      color: Colors.white,
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Plan Your Route',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),
+                            ),
+                            SizedBox(height: 4.0),
+                            Text(
+                              'Choose your environmentally friendly transportation mode',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            SizedBox(height: 16.0),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Wrap(
+                                    spacing: 8.0, // Space between the buttons
+                                    children: TransportMode.values.map((mode) {
+                                      return _buildTransportButton(mode.toString().split('.').last.capitalize(), mode);
+                                    }).toList(),
+                                  ),
+                                ),
+                                OutlinedButton(
+                                  onPressed: () {
+                                    // Handle plan route action
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Text(' Plan route', style: TextStyle(fontSize: 12)),
+                                      Icon(Icons.arrow_forward_ios, size: 16.0),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Color(0xFFF5FBE5),
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                    child: Card(
+                      margin: EdgeInsets.zero,
+                      color: Colors.white,
+                      child: ListTile(
+                        title: Text('Friends',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        subtitle: Text('Connect with friends and challenge each other to be more eco-friendly',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        trailing: OutlinedButton(
+                          onPressed: () {
+                            // Handle add friends action
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(' Add Friends', style: TextStyle(fontSize: 11)),
+                              Icon(Icons.arrow_forward_ios, size: 16.0),
+                            ],
+                          ),
+                        ),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Color(0xFFF5FBE5),
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                    child: Card(
+                      margin: EdgeInsets.zero,
+                      color: Colors.white,
+                      child: ListTile(
+                        title: Text('Challenges',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        subtitle: Text('Join challenges and earn badges for eco-friendly achievements',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        trailing: OutlinedButton(
+                          onPressed: () {
+                            // Handle view all challenges action
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(' View All Challenges', style: TextStyle(fontSize: 11)),
+                              Icon(Icons.arrow_forward_ios, size: 16.0),
+                            ],
+                          ),
+                        ),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
+                    ),
+                  ),
                 // Add other widgets for the rest of the body content
                 ],
             ),
@@ -96,5 +250,11 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
         ),
       ),
     );
+  }
+}
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }
