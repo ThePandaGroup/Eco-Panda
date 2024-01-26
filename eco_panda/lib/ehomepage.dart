@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import './page_template.dart';
+import './emap_nav.dart';
 
 enum TransportMode { walking, biking, bus, carpooling }
 
@@ -36,23 +38,7 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
       },
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFFF5FBE5),
-          title: Row(
-            children: <Widget>[
-              Image.asset(
-                'assets/ecopanda_nobg.png', // Replace with your actual logo asset path
-                fit: BoxFit.cover,
-                height: 50.0, // You can adjust the size to fit your design
-              ),
-              SizedBox(width: 5),
-              // Provides some space between the logo and the text
-              Text('ECO-Panda',
-                style: const TextStyle(fontWeight: FontWeight.bold,),
-              ),
-            ],
-          ),
-        ),
+        appBar: CustomAppBar(),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -137,7 +123,10 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                                 ),
                                 OutlinedButton(
                                   onPressed: () {
-                                    // Handle plan route action
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => EMapNav()),
+                                    );
                                   },
                                   style: OutlinedButton.styleFrom(
                                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -247,6 +236,12 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                 ],
             ),
           ),
+        ),
+        bottomNavigationBar: QuickToolbar(
+          currentIndex: 0, // The index for the current page
+          onItemSelected: (index) {
+            // Handle item tap
+          },
         ),
       ),
     );
