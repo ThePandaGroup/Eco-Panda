@@ -43,7 +43,7 @@ class _ClassNameState extends State<ClassName> {
           
           // body: SingleChildScrollView(
           // your content
-          )
+          // )
           
           bottomNavigationBar: QuickToolbar(
             currentIndex: 0, // The index for the current page
