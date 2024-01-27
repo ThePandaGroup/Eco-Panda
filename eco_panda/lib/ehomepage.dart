@@ -32,14 +32,7 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).requestFocus(FocusNode());
-      },
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF5F5F5),
-        appBar: CustomAppBar(),
-        body: SingleChildScrollView(
+    return SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
@@ -56,33 +49,59 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                     child: Card(
                       margin: EdgeInsets.all(5.0),
                       color: Colors.white,
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: AssetImage('assets/avatar.png'), // Placeholder for an user avatar
-                        ),
-                        title: Text('Welcome back'),
-                        subtitle: Text('Your Eco Score: 85'),
-                        trailing: OutlinedButton(
-                          onPressed: () {
-                            // Handle view details action
-                          },
-                          style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Text('View Details', style: TextStyle(fontSize: 12)),
-                              Icon(Icons.arrow_forward_ios, size: 16.0),
-                            ],
-                          ),
-                        ),
-                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4.0),
                       ),
-                    ),
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              backgroundImage: AssetImage('assets/avatar.png'), // Placeholder for an user avatar
+                              radius: 30, // Adjust the size as needed
+                            ),
+                            SizedBox(width: 15),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Welcome back, John!',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    'Your Eco Score: 85',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: OutlinedButton(
+                                      onPressed: () {
+                                        Navigator.pushNamed(context, '/profile');
+                                      },
+                                      style: OutlinedButton.styleFrom(
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        side: BorderSide(color: Colors.grey),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text('View Your Carbon Footprints History', style: TextStyle(fontSize: 12)),
+                                          Icon(Icons.arrow_forward_ios, size: 16.0),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                   ),
                   Container(
                     margin: EdgeInsets.all(8.0),
@@ -236,14 +255,6 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                 ],
             ),
           ),
-        ),
-        bottomNavigationBar: QuickToolbar(
-          currentIndex: 0, // The index for the current page
-          onItemSelected: (index) {
-            // Handle item tap
-          },
-        ),
-      ),
     );
   }
 }

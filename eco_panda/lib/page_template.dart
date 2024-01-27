@@ -1,5 +1,8 @@
 
 import 'package:flutter/material.dart';
+import './ehomepage.dart';
+import './eprofile.dart';
+import './echallenges.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   CustomAppBar({Key? key}) : preferredSize = Size.fromHeight(kToolbarHeight), super(key: key);
@@ -30,41 +33,58 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class QuickToolbar extends StatefulWidget {
-  final int currentIndex;
-  final Function(int) onItemSelected;
-
-  const QuickToolbar({
-    Key? key,
-    required this.currentIndex,
-    required this.onItemSelected,
-  }) : super(key: key);
+class EPageTemplate extends StatefulWidget {
+  const EPageTemplate({super.key});
 
   @override
-  _QuickToolbarState createState() => _QuickToolbarState();
+  State<EPageTemplate> createState() => _EPageTemplateState();
 }
 
-class _QuickToolbarState extends State<QuickToolbar> {
+class _EPageTemplateState extends State<EPageTemplate> {
+  int _selectedIndex = 0;
+
+  static const List<Widget> _pageWidgets = <Widget>[
+    EPandaHomepage(),
+    EChallenges(),
+    EProfile(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: widget.currentIndex,
-      onTap: widget.onItemSelected,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F5F5),
+        appBar: CustomAppBar(),
+        body: _pageWidgets.elementAt(_selectedIndex),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.emoji_events),
+              label: 'Challenges',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.amber[800],
+          onTap: _onItemTapped,
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Search',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-        // Add more items as needed
-      ],
+      ),
     );
   }
 }

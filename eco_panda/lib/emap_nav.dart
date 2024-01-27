@@ -18,13 +18,17 @@ class _EMapNavState extends State<EMapNav> {
         child: Scaffold(
           backgroundColor: const Color(0xFFF5F5F5),
           appBar: CustomAppBar(),
+
+          // temp: to show which page I am on
+          body: Text('Map Navigation Page'),
           // body: SingleChildScrollView(
-          bottomNavigationBar: QuickToolbar(
-            currentIndex: 0, // The index for the current page
-            onItemSelected: (index) {
-              // Handle item tap
-            },
-          ),
+
+          // bottomNavigationBar: QuickToolbar(
+          //   currentIndex: 0,
+          //   onItemSelected: (index) {
+          //     // Handle item tap
+          //   },
+          // ),
 
         ),
     );
