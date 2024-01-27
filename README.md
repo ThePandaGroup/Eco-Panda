@@ -1,60 +1,31 @@
 # Eco-Panda
 
-A new Flutter project.
+## Project Overview
 
-## Getting Started
+ECO-Panda is a Flutter-based mobile application focused on promoting eco-friendly practices and community engagement. The app allows users to plan eco-friendly routes, track their carbon footprint, connect with friends, participate in challenges, and much more.
 
-This project is a starting point for a Flutter application.
+### Key Features
 
-A few resources to get you started if this is your first Flutter project:
+- **Route Planning**: Choose the most environmentally friendly modes of transportation.
+- **Carbon Footprint Tracking**: Monitor and manage your eco score.
+- **Challenges and Rewards**: Engage in eco-friendly activities and earn rewards.
+- **Leaderboards**: Compete with friends and other users in eco-friendly practices.
+- **Friends**: Connect with friends and encourage each other towards eco-friendly habits.
+- **Settings and Data Storage**: Manage your personal preferences and data.
+- **Profile Management**: Customize your user profile and track your eco-friendly achievements.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Page Navigation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The ECO-Panda app features a quick-access toolbar at the bottom of the screen, facilitating easy navigation between key sections of the app. Here's an overview of the navigation flow:
 
-Template for each widget:
-```
-import 'package:flutter/material.dart';
-import './page_template.dart';
+- **Homepage**: The central hub of the app. From here, users can navigate to:
+  - **Carbon Footprint History**: View and track your environmental impact over time.
+  - **Route Planning**: Plan eco-friendly routes for your travel.
 
-class ClassName extends StatefulWidget {
-  const ClassName({super.key});
+- **Challenges**: Engage in various eco-friendly challenges. Users can navigate from here to:
+  - **Leaderboards**: See how you stack up against others in meeting eco-friendly challenges.
 
-  @override
-  State<ClassName> createState() => _ClassNameState();
-}
+- **Profile**: Manage your personal profile and view your eco achievements. From the profile, users can navigate to:
+  - **Settings**: Adjust app settings and manage data storage preferences.
 
-class _ClassNameState extends State<ClassName> {
-
-  @override
-  Widget build(BuildContext context) {
-  
-    return GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-        },
-        
-        child: Scaffold(
-          backgroundColor: const Color(0xFFF5F5F5),
-          appBar: CustomAppBar(),
-          
-          // body: SingleChildScrollView(
-          // your content
-          // )
-          
-          bottomNavigationBar: QuickToolbar(
-            currentIndex: 0, // The index for the current page
-            onItemSelected: (index) {
-              // Handle item tap
-            },
-          ),
-        ),
-    );
-  }
-}
-```
-
-
+Navigation between these sections is intuitive and user-friendly, ensuring a seamless user experience while encouraging eco-friendly practices.
