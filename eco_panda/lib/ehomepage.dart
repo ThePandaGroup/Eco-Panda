@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
-import './page_template.dart';
 import './emap_nav.dart';
+import './ecarbon_history.dart';
+import './efriends.dart';
 
 enum TransportMode { walking, biking, bus, carpooling }
 
@@ -79,7 +80,9 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                                     alignment: Alignment.centerRight,
                                     child: OutlinedButton(
                                       onPressed: () {
-                                        Navigator.pushNamed(context, '/profile');
+                                        Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) => ECarbonHistory()),
+                                        );
                                       },
                                       style: OutlinedButton.styleFrom(
                                         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -134,7 +137,7 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                               children: [
                                 Expanded(
                                   child: Wrap(
-                                    spacing: 8.0, // Space between the buttons
+                                    spacing: 8.0,
                                     children: TransportMode.values.map((mode) {
                                       return _buildTransportButton(mode.toString().split('.').last.capitalize(), mode);
                                     }).toList(),
@@ -142,8 +145,7 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                                 ),
                                 OutlinedButton(
                                   onPressed: () {
-                                    Navigator.push(
-                                      context,
+                                    Navigator.push(context,
                                       MaterialPageRoute(builder: (context) => EMapNav()),
                                     );
                                   },
@@ -190,7 +192,9 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                         ),
                         trailing: OutlinedButton(
                           onPressed: () {
-                            // Handle add friends action
+                            Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => EFriends()),
+                            );
                           },
                           style: OutlinedButton.styleFrom(
                             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),

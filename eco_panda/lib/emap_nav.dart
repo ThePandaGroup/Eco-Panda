@@ -23,13 +23,6 @@ class _EMapNavState extends State<EMapNav> {
           body: Text('Map Navigation Page'),
           // body: SingleChildScrollView(
 
-          // bottomNavigationBar: QuickToolbar(
-          //   currentIndex: 0,
-          //   onItemSelected: (index) {
-          //     // Handle item tap
-          //   },
-          // ),
-
         ),
     );
   }
