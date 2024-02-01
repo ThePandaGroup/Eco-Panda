@@ -13,6 +13,7 @@ class EChallenges extends StatefulWidget {
   State<EChallenges> createState() => _EChallengesState();
 }
 
+// Change things in here for the page
 class _EChallengesState extends State<EChallenges> {
 
   static const String cTitle = 'Daily Challenge';
@@ -82,8 +83,7 @@ class ChallengeCard extends StatelessWidget {
 }
 
 
-// ignore this for now
-// customized button
+// The Join button
 class CustomOutlinedButton extends StatelessWidget {
   const CustomOutlinedButton({super.key});
 
