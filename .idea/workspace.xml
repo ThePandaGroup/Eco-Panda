@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7e729d5f-cd13-4b09-a81b-17cb8a511c64" name="Changes" comment="Selected parts to work on (Alex)">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eco_panda/lib/echallenges.dart" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/lib/echallenges.dart" afterDir="false" />
-    </list>
+    <list default="true" id="7e729d5f-cd13-4b09-a81b-17cb8a511c64" name="Changes" comment="Added additional comments for Challenge Page" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -71,11 +68,29 @@
       <option name="project" value="LOCAL" />
       <updated>1706592662456</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Update UI challenge Page, functional decomposed methods for challenge Page">
+      <option name="closed" value="true" />
+      <created>1706769402423</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1706769402423</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Added additional comments for Challenge Page">
+      <option name="closed" value="true" />
+      <created>1706769463383</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1706769463383</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Selected parts to work on (Alex)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Selected parts to work on (Alex)" />
+    <MESSAGE value="Update UI challenge Page, functional decomposed methods for challenge Page" />
+    <MESSAGE value="Added additional comments for Challenge Page" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added additional comments for Challenge Page" />
   </component>
 </project>
