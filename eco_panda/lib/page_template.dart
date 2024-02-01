@@ -87,3 +87,48 @@ class _EPageTemplateState extends State<EPageTemplate> {
     );
   }
 }
+
+class CustomContainerCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets margin;
+  final EdgeInsets padding;
+  final Color borderColor;
+  final double borderWidth;
+  final double borderRadius;
+
+  const CustomContainerCard({
+    Key? key,
+    required this.child,
+    this.margin = const EdgeInsets.symmetric(vertical: 10.0),
+    this.padding = const EdgeInsets.all(9.0),
+    this.borderColor = const Color(0xFFF5FBE5),
+    this.borderWidth = 2.0,
+    this.borderRadius = 4.0,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: margin,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: borderColor,
+          width: borderWidth,
+        ),
+        borderRadius: BorderRadius.circular(borderRadius),
+      ),
+      child: Card(
+        margin: EdgeInsets.zero,
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
+        child: Padding(
+          padding: padding,
+          child: child,
+        ),
+      ),
+    );
+  }
+}
