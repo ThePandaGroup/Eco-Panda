@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import './page_template.dart';
 
 // delete this import
 // Alex did it!
 import './emap_nav.dart';
-import './efriends.dart';
 
 class EChallenges extends StatefulWidget {
   const EChallenges({super.key});

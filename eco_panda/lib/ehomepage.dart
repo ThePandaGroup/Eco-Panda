@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 import './emap_nav.dart';
 import './ecarbon_history.dart';
-import './efriends.dart';
 import './page_template.dart';
 
 enum TransportMode { walking, biking, bus, carpooling }
@@ -136,34 +134,6 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                             ],
                           ),
                         ],
-                      ),
-                    ),
-                  ),
-                  CustomContainerCard(
-                    child: ListTile(
-                      title: Text('Friends',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      subtitle: Text('Connect with friends and challenge each other to be more eco-friendly',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      trailing: OutlinedButton(
-                        onPressed: () {
-                          Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => EFriends()),
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(' Add Friends', style: TextStyle(fontSize: 11)),
-                            Icon(Icons.arrow_forward_ios, size: 16.0),
-                          ],
-                        ),
                       ),
                     ),
                   ),
