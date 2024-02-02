@@ -1,10 +1,76 @@
 import 'package:flutter/material.dart';
-import './page_template.dart';
-
+import 'package:go_router/go_router.dart';
+import './ehomepage.dart';
+import './echallenges.dart';
+import './efriends.dart';
+import './eleaderboards.dart';
+import './emap_nav.dart';
+import './eprofile.dart';
+import './esettings.dart';
+import './ecarbon_history.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
+final GoRouter _router = GoRouter(
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) {
+        return const EPandaHomepage();
+      },
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'carbon-history',
+          builder: (BuildContext context, GoRouterState state) {
+            return const ECarbonHistory();
+          },
+        ),
+        GoRoute(
+          path: 'route-planning',
+          builder: (BuildContext context, GoRouterState state) {
+            return const EMapNav();
+          },
+        ),
+        GoRoute(
+          path: 'friends',
+          builder: (BuildContext context, GoRouterState state) {
+            return const EFriends();
+          },
+        ),
+      ],
+    ),
+    GoRoute(
+      path: '/challenges',
+      builder: (BuildContext context, GoRouterState state) {
+        return const EChallenges();
+      },
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'leaderboard',
+          builder: (BuildContext context, GoRouterState state) {
+            return const ELeaderboards();
+          },
+        ),
+      ],
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (BuildContext context, GoRouterState state) {
+        return const EProfile();
+      },
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'settings',
+          builder: (BuildContext context, GoRouterState state) {
+            return const ESettings();
+          },
+        ),
+      ],
+    ),
+  ],
+);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -12,14 +78,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Your App Title',
-      theme: ThemeData(
-        // Define your app's theme here
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: const EPageTemplate(),
+    return MaterialApp.router(
+      routerConfig: _router,
     );
   }
 }

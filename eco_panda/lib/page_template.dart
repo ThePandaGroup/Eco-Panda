@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import './ehomepage.dart';
 import './eprofile.dart';
 import './echallenges.dart';
@@ -42,92 +42,52 @@ class EPageTemplate extends StatefulWidget {
 class _EPageTemplateState extends State<EPageTemplate> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _pageWidgets = <Widget>[
-    EPandaHomepage(),
-    EChallenges(),
-    EProfile(),
+  final List<String> _routePaths = [
+    '/home', // Home
+    '/challenges', // Challenges
+    '/profile', // Profile
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    GoRouter.of(context).go(_routePaths[index]);
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).requestFocus(FocusNode());
-      },
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF5F5F5),
-        appBar: CustomAppBar(),
-        body: _pageWidgets.elementAt(_selectedIndex),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.emoji_events),
-              label: 'Challenges',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          onTap: _onItemTapped,
-        ),
+    String currentLocation = GoRouter.of(context).location;
+    _selectedIndex = _routePaths.indexOf(currentLocation);
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
+      appBar: CustomAppBar(),
+      // You can use a switch or if-else statements to decide which widget to show based on the currentLocation
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          EPandaHomepage(),
+          EChallenges(),
+          EProfile(),
+          // other pages...
+        ],
       ),
-    );
-  }
-}
-
-class CustomContainerCard extends StatelessWidget {
-  final Widget child;
-  final EdgeInsets margin;
-  final EdgeInsets padding;
-  final Color borderColor;
-  final double borderWidth;
-  final double borderRadius;
-
-  const CustomContainerCard({
-    Key? key,
-    required this.child,
-    this.margin = const EdgeInsets.symmetric(vertical: 10.0),
-    this.padding = const EdgeInsets.all(9.0),
-    this.borderColor = const Color(0xFFF5FBE5),
-    this.borderWidth = 2.0,
-    this.borderRadius = 4.0,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: margin,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: borderColor,
-          width: borderWidth,
-        ),
-        borderRadius: BorderRadius.circular(borderRadius),
-      ),
-      child: Card(
-        margin: EdgeInsets.zero,
-        color: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius),
-        ),
-        child: Padding(
-          padding: padding,
-          child: child,
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.emoji_events),
+            label: 'Challenges',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
     );
   }
