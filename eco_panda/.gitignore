@@ -43,4 +43,4 @@ app.*.map.json
 /android/app/release
 
 # Secret keys
-secret.properties
+eco_panda/android/app/secret.properties
