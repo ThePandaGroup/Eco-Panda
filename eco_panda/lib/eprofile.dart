@@ -45,11 +45,17 @@ class ProfileSection extends StatelessWidget{
               children: [
                 const Text(
                   'John Hougland',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
                 ),
                 const Text(
                   'Your Eco Score: 85',
-                  style: TextStyle(fontSize: 14),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Align(
@@ -68,7 +74,12 @@ class ProfileSection extends StatelessWidget{
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Text('Edit Profile', style: TextStyle(fontSize: 12)),
+                        Text('Edit Profile',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12)
+                        ),
                         Icon(Icons.arrow_forward_ios, size: 16.0),
                       ],
                     ),

@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7e729d5f-cd13-4b09-a81b-17cb8a511c64" name="Changes" comment="Added profile background picture to Asset">
+    <list default="true" id="7e729d5f-cd13-4b09-a81b-17cb8a511c64" name="Changes" comment="Added customizedcardwidget with background in profile page">
       <change beforePath="$PROJECT_DIR$/eco_panda/lib/eprofile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/lib/eprofile.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -118,7 +118,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706995826530</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Added customizedcardwidget with background in profile page">
+      <option name="closed" value="true" />
+      <created>1706996806287</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1706996806287</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -128,6 +136,7 @@
     <MESSAGE value="Updated challenge page" />
     <MESSAGE value="Modifying Profile Page (Alex)" />
     <MESSAGE value="Added profile background picture to Asset" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added profile background picture to Asset" />
+    <MESSAGE value="Added customizedcardwidget with background in profile page" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added customizedcardwidget with background in profile page" />
   </component>
 </project>
