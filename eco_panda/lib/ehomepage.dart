@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './emap_nav.dart';
 import './ecarbon_history.dart';
 import './page_template.dart';
+import './eleaderboards.dart';
 
 enum TransportMode { walking, biking, bus, carpooling }
 
@@ -137,6 +138,36 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                       ),
                     ),
                   ),
+                  CustomContainerCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'View Leaderboards',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        SizedBox(height: 8),
+                        Text("1. John - 100 points"),
+                        Text("2. Jane - 90 points"),
+                        // Add more static entries or a method to dynamically generate this list
+                        SizedBox(height: 8),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ELeaderboards()),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.black, // Button text color
+                          ),
+                          child: Text('See All Leaderboards'),
+                        ),
+                      ],
+                    ),
+                  ),
+
+
                 ],
             ),
           ),
