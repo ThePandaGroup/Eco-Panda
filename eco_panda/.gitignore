@@ -43,4 +43,4 @@ app.*.map.json
 /android/app/release
 
 # Secret keys
-android/secret.properties
+android/secrets.properties
