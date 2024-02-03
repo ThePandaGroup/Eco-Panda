@@ -31,24 +31,24 @@ class profileSection extends StatelessWidget{
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
+          const CircleAvatar(
             backgroundImage: AssetImage('assets/avatar.png'), // Placeholder for an user avatar
             radius: 30,
           ),
-          SizedBox(width: 15),
+          const SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Welcome back, John!',
+                const Text(
+                  'John Hougland',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                Text(
+                const Text(
                   'Your Eco Score: 85',
                   style: TextStyle(fontSize: 14),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerRight,
                   child: OutlinedButton(
@@ -58,14 +58,14 @@ class profileSection extends StatelessWidget{
                       );
                     },
                     style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      side: BorderSide(color: Colors.grey),
+                      side: const BorderSide(color: Colors.grey),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Text('View Your Carbon Footprints History', style: TextStyle(fontSize: 12)),
+                        Text('Edit Profile', style: TextStyle(fontSize: 12)),
                         Icon(Icons.arrow_forward_ios, size: 16.0),
                       ],
                     ),

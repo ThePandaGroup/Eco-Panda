@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7e729d5f-cd13-4b09-a81b-17cb8a511c64" name="Changes" comment="Updated challenge page">
-      <change beforePath="$PROJECT_DIR$/.idea/Eco-Panda.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Eco-Panda.iml" afterDir="false" />
+    <list default="true" id="7e729d5f-cd13-4b09-a81b-17cb8a511c64" name="Changes" comment="Modifying Profile Page (Alex)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eco_panda/lib/eleaderboards.dart" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/lib/eleaderboards.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eco_panda/lib/eprofile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/lib/eprofile.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eco_panda/lib/esettings.dart" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/lib/esettings.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eco_panda/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +96,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706769901410</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Modifying Profile Page (Alex)">
+      <option name="closed" value="true" />
+      <created>1706994630669</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1706994630669</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -106,6 +112,7 @@
     <MESSAGE value="Update UI challenge Page, functional decomposed methods for challenge Page" />
     <MESSAGE value="Added additional comments for Challenge Page" />
     <MESSAGE value="Updated challenge page" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated challenge page" />
+    <MESSAGE value="Modifying Profile Page (Alex)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Modifying Profile Page (Alex)" />
   </component>
 </project>
