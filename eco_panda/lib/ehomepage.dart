@@ -143,12 +143,12 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'View Leaderboards',
+                          'Your Rank',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         SizedBox(height: 8),
-                        Text("1. John - 100 points"),
-                        Text("2. Jane - 90 points"),
+                        Text("109. John - 50 points"), // Need to actually pull from Database
+
                         // Add more static entries or a method to dynamically generate this list
                         SizedBox(height: 8),
                         TextButton(
