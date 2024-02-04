@@ -17,7 +17,7 @@ class _EProfileState extends State<EProfile> {
         child: Padding(
         padding: EdgeInsets.all(12.0),
     child: Column(
-      children: [ProfileSection()],
+      children: [ProfileSection(), AchievementSection()],
     )
     )
     );
@@ -94,6 +94,99 @@ class ProfileSection extends StatelessWidget{
   }
 }
 
+
+class AchievementSection extends StatelessWidget {
+  const AchievementSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column( // Changed from Row to Column
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0), // Adjust as needed
+          child: Text(
+            'Top Achievements',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        SizedBox(height: 10), // Add some spacing
+        HorizontalScrollableCards(), // This will now be below the text
+      ],
+    );
+  }
+}
+
+
+
+
+class HorizontalScrollableCards extends StatelessWidget {
+  const HorizontalScrollableCards({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 100, // Adjust the height as needed
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: const <Widget>[
+          ImageBackgroundCard(backgroundImage: "assets/environmental_background.png", text: "First Challenge !!!"),
+          ImageBackgroundCard(backgroundImage: "assets/environmental_background.png", text: "First Challenge !!!"),
+          ImageBackgroundCard(backgroundImage: "assets/environmental_background.png", text: "First Challenge !!!"),
+          ImageBackgroundCard(backgroundImage: "assets/environmental_background.png", text: "First Challenge !!!"),
+          // Add more cards as needed
+        ],
+      ),
+    );
+  }
+}
+
+/*
+*
+*
+ */
+class ImageBackgroundCard extends StatelessWidget {
+  final String backgroundImage;
+  final String text;
+  final double width; // This will now also determine the height to form a square
+  final TextStyle textStyle;
+
+  const ImageBackgroundCard({
+    Key? key,
+    required this.backgroundImage,
+    required this.text,
+    this.width = 200.0, // Default size for width and height
+    this.textStyle = const TextStyle(color: Colors.white, fontSize: 24), // Default text style
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      clipBehavior: Clip.antiAlias, // Ensures the image is clipped to the card's border radius
+      child: Container(
+        width: width,
+        height: width, // Set height equal to width to make it a square
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(backgroundImage),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: textStyle,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
 /*
 *Description: A card can contain background image
 * notes: It is an inheritance from customContainer Card, it is a child class
@@ -152,3 +245,5 @@ class CustomContainerCardWithBackground extends CustomContainerCard {
     );
   }
 }
+
+
