@@ -4,8 +4,14 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="7e729d5f-cd13-4b09-a81b-17cb8a511c64" name="Changes" comment="Added customizedcardwidget with background in profile page">
       <change beforePath="$PROJECT_DIR$/eco_panda/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/.gitignore" afterDir="false" />
+=======
+    <list default="true" id="7e729d5f-cd13-4b09-a81b-17cb8a511c64" name="Changes" comment="Color Adjustment twoards profile section profile page">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eco_panda/lib/eprofile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/lib/eprofile.dart" afterDir="false" />
+>>>>>>> 188ac7af72fcced80e34db3e3f4813bc813ad6a8
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,7 +132,23 @@
       <option name="project" value="LOCAL" />
       <updated>1706996806287</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Color Adjustment twoards profile section profile page">
+      <option name="closed" value="true" />
+      <created>1706998605608</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1706998605608</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Color Adjustment twoards profile section profile page">
+      <option name="closed" value="true" />
+      <created>1706998615908</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1706998615908</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -137,6 +159,7 @@
     <MESSAGE value="Modifying Profile Page (Alex)" />
     <MESSAGE value="Added profile background picture to Asset" />
     <MESSAGE value="Added customizedcardwidget with background in profile page" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added customizedcardwidget with background in profile page" />
+    <MESSAGE value="Color Adjustment twoards profile section profile page" />
+    <option name="LAST_COMMIT_MESSAGE" value="Color Adjustment twoards profile section profile page" />
   </component>
 </project>
