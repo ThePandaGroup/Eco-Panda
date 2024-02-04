@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7e729d5f-cd13-4b09-a81b-17cb8a511c64" name="Changes" comment="Color Adjustment twoards profile section profile page">
+    <list default="true" id="7e729d5f-cd13-4b09-a81b-17cb8a511c64" name="Changes" comment="Updated Top Achievements section of profile page">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eco_panda/lib/echallenges.dart" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/lib/echallenges.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eco_panda/lib/eprofile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/lib/eprofile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eco_panda/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +145,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706998615908</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Updated Top Achievements section of profile page">
+      <option name="closed" value="true" />
+      <created>1707006792037</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1707006792037</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -155,6 +165,7 @@
     <MESSAGE value="Added profile background picture to Asset" />
     <MESSAGE value="Added customizedcardwidget with background in profile page" />
     <MESSAGE value="Color Adjustment twoards profile section profile page" />
-    <option name="LAST_COMMIT_MESSAGE" value="Color Adjustment twoards profile section profile page" />
+    <MESSAGE value="Updated Top Achievements section of profile page" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated Top Achievements section of profile page" />
   </component>
 </project>
