@@ -18,7 +18,7 @@ class _EProfileState extends State<EProfile> {
         child: Padding(
         padding: EdgeInsets.all(12.0),
     child: Column(
-      children: [ProfileSection(), AchievementSection(),EcoHistorySection()],
+      children: [ProfileSection(), AchievementSection(),EcoHistorySection(), SettingSection()],
     )
     )
     );
@@ -158,18 +158,52 @@ class EcoHistorySection extends StatelessWidget{
 }
 
 
+class SettingSection extends StatelessWidget{
+  const SettingSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0), // Adjust as needed
+          child: Text(
+            'Setting',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        TemplateCard(backgroundImage: "assets/machinery.png", actiontxt: "Go to Setting")
+      ],
+
+    );
+  }
+
+}
+
+
 class TemplateCard extends StatelessWidget {
   final String backgroundImage; // Add backgroundImage parameter
   final String actiontxt;
+  final double width; // Add width parameter
+  final double height; // Add height parameter
+
   const TemplateCard({
     super.key,
     required this.backgroundImage,
-    required this.actiontxt, // Make backgroundImage required or optional based on your use case
+    required this.actiontxt,
+    this.width = 400.0, // Default width
+    this.height = 100.0, // Default height
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: width, // Set the width
+      height: height, // Set the height
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(
         border: Border.all(

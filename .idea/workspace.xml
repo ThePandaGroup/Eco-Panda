@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7e729d5f-cd13-4b09-a81b-17cb8a511c64" name="Changes" comment="Updated Top Achievements section of profile page">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eco_panda/lib/echallenges.dart" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/lib/echallenges.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eco_panda/lib/eprofile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/lib/eprofile.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eco_panda/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/eco_panda/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
