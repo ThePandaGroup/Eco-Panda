@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './page_template.dart';
 import './ecarbon_history.dart';
 import './emap_nav.dart';
+import './esettings.dart';
 
 // Alex is doing it lmao
 class EProfile extends StatefulWidget {
@@ -64,7 +65,7 @@ class ProfileSection extends StatelessWidget{
                   child: OutlinedButton(
                     onPressed: () {
                       Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ECarbonHistory()),
+                        MaterialPageRoute(builder: (context) => ESettings()),
                       );
                     },
                     style: OutlinedButton.styleFrom(
@@ -94,17 +95,6 @@ class ProfileSection extends StatelessWidget{
     );
   }
 }
-
-class EcoProfile extends StatelessWidget{
-  const EcoProfile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    throw UnimplementedError();
-  }
-
-}
-
 
 class AchievementSection extends StatelessWidget {
   const AchievementSection({super.key});
@@ -149,7 +139,7 @@ class EcoHistorySection extends StatelessWidget{
             ),
           ),
         ),
-        TemplateCard(backgroundImage: "assets/bluesky.png", actiontxt: "Go to Carbon History")
+        TemplateCard(backgroundImage: "assets/bluesky.png", actiontxt: "Go to Carbon History",resPage: ECarbonHistory(),)
       ],
 
     );
@@ -176,7 +166,7 @@ class SettingSection extends StatelessWidget{
             ),
           ),
         ),
-        TemplateCard(backgroundImage: "assets/machinery.png", actiontxt: "Go to Setting")
+        TemplateCard(backgroundImage: "assets/machinery.png", actiontxt: "Go to Setting",resPage: ESettings())
       ],
 
     );
@@ -189,14 +179,16 @@ class TemplateCard extends StatelessWidget {
   final String backgroundImage; // Add backgroundImage parameter
   final String actiontxt;
   final double width; // Add width parameter
-  final double height; // Add height parameter
+  final double height;
+  final resPage;// Add height parameter
 
   const TemplateCard({
     super.key,
     required this.backgroundImage,
     required this.actiontxt,
     this.width = 400.0, // Default width
-    this.height = 100.0, // Default height
+    this.height = 100.0,
+    required this.resPage, // Default height
   });
 
   @override
@@ -223,7 +215,7 @@ class TemplateCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(4.0),
         ),
         child: Center(
-          child: CustomOutlinedButton(pageName: actiontxt)
+          child: CustomOutlinedButton(pageName: actiontxt, resPage: resPage)
         )
       ),
     );
@@ -236,9 +228,11 @@ class TemplateCard extends StatelessWidget {
 class CustomOutlinedButton extends StatelessWidget {
 
   final String pageName;
+  final resPage;
   const CustomOutlinedButton(
       {super.key,
-        required this.pageName}
+        required this.pageName,
+        required this.resPage}
       );
 
   @override
@@ -247,7 +241,7 @@ class CustomOutlinedButton extends StatelessWidget {
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => EMapNav()),
+          MaterialPageRoute(builder: (context) => resPage),
         );
       },
       style: OutlinedButton.styleFrom(

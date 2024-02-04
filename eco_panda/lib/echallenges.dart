@@ -110,24 +110,3 @@ class CustomOutlinedButton extends StatelessWidget {
 }
 
 
-/*
-OutlinedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => EFriends()),
-              );
-            },
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text('Join', style: TextStyle(fontSize: 11)),
-                Icon(Icons.arrow_forward_ios, size: 16.0),
-              ],
-            ),
-          ),
- */
