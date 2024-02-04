@@ -13,12 +13,12 @@ class EMapNav extends StatefulWidget {
 }
 
 class _EMapNavState extends State<EMapNav> {
-  static const mapsApiKey = String.fromEnvironment('GOOGLE_MAPS_API_KEY');
   late GoogleMapController mapController;
   final LatLng _defaultCenter = const LatLng(-23.5557714, -46.6395571);
   final TextEditingController _destinationController = TextEditingController();
 
   List<String> _autocompleteSuggestions = [];
+  bool _showAutocompleteSuggestions = false;
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -83,6 +83,12 @@ class _EMapNavState extends State<EMapNav> {
       final predictions = jsonResponse['predictions'];
       setState(() {
         _autocompleteSuggestions = List<String>.from(predictions.map((p) => p['description']));
+        _showAutocompleteSuggestions = _autocompleteSuggestions.isNotEmpty;
+      });
+    } else {
+      setState(() {
+        _autocompleteSuggestions = [];
+        _showAutocompleteSuggestions = false;
       });
     }
   }
@@ -120,6 +126,16 @@ class _EMapNavState extends State<EMapNav> {
                 decoration: InputDecoration(
                   hintText: 'Enter destination',
                   prefixIcon: Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.cancel),
+                    onPressed: () {
+                      setState(() {
+                        _destinationController.clear();
+                        _autocompleteSuggestions = [];
+                        _showAutocompleteSuggestions = false;
+                      });
+                    },
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(color: Colors.grey),
@@ -130,22 +146,27 @@ class _EMapNavState extends State<EMapNav> {
                 },
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _autocompleteSuggestions.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_autocompleteSuggestions[index]),
-                    onTap: () {
-                      _destinationController.text = _autocompleteSuggestions[index];
-                      setState(() {
-                        _autocompleteSuggestions = [];
-                      });
-                    },
-                  );
-                },
+            if (_showAutocompleteSuggestions)
+              Expanded(
+                child: ListView.separated(
+                  itemCount: _autocompleteSuggestions.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(_autocompleteSuggestions[index]),
+                      onTap: () {
+                        _destinationController.text = _autocompleteSuggestions[index];
+                        setState(() {
+                          _autocompleteSuggestions = [];
+                          _showAutocompleteSuggestions = false;
+                        });
+                      },
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return Divider(); // Add a one-line divider
+                  },
+                ),
               ),
-            ),
             ElevatedButton(
               onPressed: () {
                 placeAutocomplete("Seattle");
