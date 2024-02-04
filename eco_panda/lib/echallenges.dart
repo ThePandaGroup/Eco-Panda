@@ -73,7 +73,7 @@ class ChallengeCard extends StatelessWidget {
           subtitle: Text(description,
             style: const TextStyle(fontSize: 12),
           ),
-          trailing: CustomOutlinedButton(),
+          trailing: const CustomOutlinedButton(),
         ),
       ),
     );

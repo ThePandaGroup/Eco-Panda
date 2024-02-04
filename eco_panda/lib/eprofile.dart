@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './page_template.dart';
 import './ecarbon_history.dart';
+import './emap_nav.dart';
 
 // Alex is doing it lmao
 class EProfile extends StatefulWidget {
@@ -17,7 +18,7 @@ class _EProfileState extends State<EProfile> {
         child: Padding(
         padding: EdgeInsets.all(12.0),
     child: Column(
-      children: [ProfileSection(), AchievementSection()],
+      children: [ProfileSection(), AchievementSection(),EcoHistorySection(), SettingSection()],
     )
     )
     );
@@ -94,19 +95,29 @@ class ProfileSection extends StatelessWidget{
   }
 }
 
+class EcoProfile extends StatelessWidget{
+  const EcoProfile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    throw UnimplementedError();
+  }
+
+}
+
 
 class AchievementSection extends StatelessWidget {
   const AchievementSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column( // Changed from Row to Column
+    return const Column( // Changed from Row to Column
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
+      children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 8.0), // Adjust as needed
           child: Text(
-            'Top Achievements',
+            'Your Eco-Profile Tracker',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -120,9 +131,142 @@ class AchievementSection extends StatelessWidget {
   }
 }
 
+class EcoHistorySection extends StatelessWidget{
+  const EcoHistorySection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0), // Adjust as needed
+          child: Text(
+            'Your Eco-Profile (Carbon History)',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        TemplateCard(backgroundImage: "assets/bluesky.png", actiontxt: "Go to Carbon History")
+      ],
+
+    );
+  }
+
+}
+
+
+class SettingSection extends StatelessWidget{
+  const SettingSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0), // Adjust as needed
+          child: Text(
+            'Setting',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        TemplateCard(backgroundImage: "assets/machinery.png", actiontxt: "Go to Setting")
+      ],
+
+    );
+  }
+
+}
+
+
+class TemplateCard extends StatelessWidget {
+  final String backgroundImage; // Add backgroundImage parameter
+  final String actiontxt;
+  final double width; // Add width parameter
+  final double height; // Add height parameter
+
+  const TemplateCard({
+    super.key,
+    required this.backgroundImage,
+    required this.actiontxt,
+    this.width = 400.0, // Default width
+    this.height = 100.0, // Default height
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width, // Set the width
+      height: height, // Set the height
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: const Color(0xFFF5FBE5),
+          width: 2.0,
+        ),
+        borderRadius: BorderRadius.circular(4.0),
+        image: DecorationImage(
+          image: AssetImage(backgroundImage), // Use the backgroundImage
+          fit: BoxFit.cover, // Cover the container bounds
+        ),
+      ),
+      child: Card(
+        margin: EdgeInsets.zero,
+        color: Colors.transparent, // Make the Card background transparent to show the Container's background
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4.0),
+        ),
+        child: Center(
+          child: CustomOutlinedButton(pageName: actiontxt)
+        )
+      ),
+    );
+  }
+}
 
 
 
+// The Go button
+class CustomOutlinedButton extends StatelessWidget {
+
+  final String pageName;
+  const CustomOutlinedButton(
+      {super.key,
+        required this.pageName}
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => EMapNav()),
+        );
+      },
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(pageName, style: const TextStyle(fontSize: 11)),
+          const Icon(Icons.arrow_forward_ios, size: 16.0),
+        ],
+      ),
+    );
+  }
+}
+
+
+// Utilized in Achievement section
 class HorizontalScrollableCards extends StatelessWidget {
   const HorizontalScrollableCards({super.key});
 
@@ -148,6 +292,7 @@ class HorizontalScrollableCards extends StatelessWidget {
 *
 *
  */
+// Utilized in Achievement Section
 class ImageBackgroundCard extends StatelessWidget {
   final String backgroundImage;
   final String text;
@@ -192,6 +337,7 @@ class ImageBackgroundCard extends StatelessWidget {
 * notes: It is an inheritance from customContainer Card, it is a child class
 * param: child widgets, background image
  */
+// Utilized in profile section
 class CustomContainerCardWithBackground extends CustomContainerCard {
   final String backgroundImage;
 
