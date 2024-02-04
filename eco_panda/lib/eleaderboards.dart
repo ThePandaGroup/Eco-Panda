@@ -1,3 +1,4 @@
+import 'package:eco_panda/page_template.dart';
 import 'package:flutter/material.dart';
 
 class ELeaderboards extends StatefulWidget {
@@ -9,24 +10,17 @@ class ELeaderboards extends StatefulWidget {
 
 class _ELeaderboardsState extends State<ELeaderboards> {
   Future<List<Map<String, dynamic>>> getGlobalLeaderboard() async {
-    // need to change so that it'll pull from database
     return List.generate(10, (index) => {"name": "User ${index + 1}", "points": 100 - index});
   }
 
   Future<Map<String, dynamic>> getUserRank() async {
-    // need to change so that it'll pull from database
     return {"name": "You", "points": 50};
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Leaderboard')),
+      appBar: CustomAppBar(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -51,7 +45,16 @@ class _ELeaderboardsState extends State<ELeaderboards> {
                           itemCount: snapshot.data?.length ?? 0,
                           itemBuilder: (context, index) {
                             var entry = snapshot.data![index];
+                            Widget? leadingIcon;
+                            if (index == 0) {
+                              leadingIcon = Icon(Icons.emoji_events, color: Colors.amber);
+                            } else if (index == 1) {
+                              leadingIcon = Icon(Icons.emoji_events, color: Colors.grey);
+                            } else if (index == 2) {
+                              leadingIcon = Icon(Icons.emoji_events, color: Colors.brown);
+                            }
                             return ListTile(
+                              leading: leadingIcon,
                               title: Text(entry["name"]),
                               trailing: Text('${entry["points"]} pts'),
                             );
@@ -87,4 +90,10 @@ class _ELeaderboardsState extends State<ELeaderboards> {
       ),
     );
   }
+}
+
+extension on Colors {
+  static const Color gold = Color(0xFFFFD700);
+  static const Color silver = Color(0xFFC0C0C0);
+  static const Color bronze = Color(0xFFCD7F32);
 }

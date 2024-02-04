@@ -124,7 +124,7 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 ),
-                                child: Row(
+                                child: const Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     Text(' Plan route', style: TextStyle(fontSize: 12)),
@@ -138,36 +138,46 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                       ),
                     ),
                   ),
+
                   CustomContainerCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
                           'Your Rank',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
                         ),
-                        SizedBox(height: 8),
-                        Text("109. John - 50 points"), // Need to actually pull from Database
+                        const SizedBox(height: 8),
+                        const Row(
+                          children: [
+                            Icon(Icons.leaderboard, color: Colors.green),
+                            SizedBox(width: 8),
+                            Text("109. John - 50 points", style: TextStyle(fontSize: 14, color: Colors.black)),
+                          ],
+                        ),
 
-                        // Add more static entries or a method to dynamically generate this list
-                        SizedBox(height: 8),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => ELeaderboards()),
-                            );
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.black, // Button text color
+                        const SizedBox(height: 16),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const ELeaderboards()),
+                              );
+                            },
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('See All Leaderboards'),
+                                Icon(Icons.arrow_forward_ios, size: 16.0),
+                              ],
+                            ),
                           ),
-                          child: Text('See All Leaderboards'),
                         ),
                       ],
                     ),
                   ),
-
-
                 ],
             ),
           ),
