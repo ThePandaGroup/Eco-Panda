@@ -18,6 +18,8 @@ class _EMapNavState extends State<EMapNav> {
   final LatLng _defaultCenter = const LatLng(-23.5557714, -46.6395571);
   final TextEditingController _destinationController = TextEditingController();
 
+  List<String> _autocompleteSuggestions = [];
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     _locateMe();
@@ -30,8 +32,8 @@ class _EMapNavState extends State<EMapNav> {
         SnackBar(
           content: Center(
             child: Text('Location permission denied. Returning to the homepage...'),
-        ),
-        duration: Duration(seconds: 3),
+          ),
+          duration: Duration(seconds: 3),
         ),
       );
       await Future.delayed(Duration(seconds: 3));
@@ -48,26 +50,40 @@ class _EMapNavState extends State<EMapNav> {
     ));
   }
 
-  List<String> _autocompleteResults = [];
-
-  Future<void> _getAutocomplete(String search) async {
-    final String url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?'
-        'input=$search&'
-        'key=$mapsApiKey';
-
+  Future<String?> fetchUrl(Uri uri, {Map<String, String>? headers}) async {
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(uri, headers: headers);
       if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-        final predictions = jsonResponse['predictions'] as List;
-        setState(() {
-          _autocompleteResults = predictions.map((p) => p['description'] as String).toList();
-        });
-      } else {
-        // Handle error or no results
+        return response.body;
       }
     } catch (e) {
-      // Handle network error
+      debugPrint(e.toString());
+    }
+    return null;
+  }
+
+  void placeAutocomplete(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        _autocompleteSuggestions = [];
+      });
+      return;
+    }
+
+    Uri uri = Uri.https("maps.googleapis.com",
+        'maps/api/place/autocomplete/json',
+        {
+          "input": query,
+          "key": "AIzaSyAtQi-0iBagmCc7MwUiEmgWDb_pF1abWeY",
+        });
+
+    String? response = await fetchUrl(uri);
+    if (response != null) {
+      final jsonResponse = json.decode(response);
+      final predictions = jsonResponse['predictions'];
+      setState(() {
+        _autocompleteSuggestions = List<String>.from(predictions.map((p) => p['description']));
+      });
     }
   }
 
@@ -76,6 +92,9 @@ class _EMapNavState extends State<EMapNav> {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
+        setState(() {
+          _autocompleteSuggestions = [];
+        });
       },
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
@@ -107,37 +126,29 @@ class _EMapNavState extends State<EMapNav> {
                   ),
                 ),
                 onChanged: (value) {
-                  if (value.isNotEmpty) {
-                    _getAutocomplete(value); // Get suggestions on text change
-                  } else {
-                    setState(() {
-                      _autocompleteResults = []; // Clear results if input is cleared
-                    });
-                  }
+                  placeAutocomplete(value);
                 },
               ),
             ),
-            // Conditional rendering based on whether there are autocomplete results
-            if (_destinationController.text.isNotEmpty && _autocompleteResults.isNotEmpty)
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _autocompleteResults.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(_autocompleteResults[index]),
-                      onTap: () {
-                        _destinationController.text = _autocompleteResults[index];
-                        setState(() {
-                          _autocompleteResults = [];
-                        });
-                      },
-                    );
-                  },
-                ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _autocompleteSuggestions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_autocompleteSuggestions[index]),
+                    onTap: () {
+                      _destinationController.text = _autocompleteSuggestions[index];
+                      setState(() {
+                        _autocompleteSuggestions = [];
+                      });
+                    },
+                  );
+                },
               ),
+            ),
             ElevatedButton(
               onPressed: () {
-                // Trigger navigation to the entered destination
+                placeAutocomplete("Seattle");
               },
               child: Text('Navigate'),
             ),
