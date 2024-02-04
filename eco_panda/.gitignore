@@ -45,5 +45,4 @@ app.*.map.json
 # Secret keys
 android/secrets.properties
 
-# Ignore .DS_Store files
-.DS_Store
+
