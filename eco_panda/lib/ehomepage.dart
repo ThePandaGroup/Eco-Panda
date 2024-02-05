@@ -4,7 +4,7 @@ import './ecarbon_history.dart';
 import './page_template.dart';
 import './eleaderboards.dart';
 
-enum TransportMode { walking, bicycling, transit, driving }
+enum TransportMode { walk, bicycle, transit, drive }
 
 class EPandaHomepage extends StatefulWidget {
   const EPandaHomepage({super.key});

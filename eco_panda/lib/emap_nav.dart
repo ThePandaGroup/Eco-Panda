@@ -1,5 +1,6 @@
 import 'package:eco_panda/ehomepage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -19,8 +20,8 @@ class _EMapNavState extends State<EMapNav> {
   String mapsApiKey = "AIzaSyAtQi-0iBagmCc7MwUiEmgWDb_pF1abWeY";
   late GoogleMapController mapController;
 
-  String _selectedMode = 'driving';
-  final List<String> _transportModes = ['driving', 'walking', 'bicycling', 'transit'];
+  String _selectedMode = 'drive';
+  final List<String> _transportModes = ['drive', 'walk', 'bicycle', 'transit'];
 
   final LatLng _defaultCenter = const LatLng(-23.5557714, -46.6395571);
   final TextEditingController _destinationController = TextEditingController();
@@ -228,24 +229,46 @@ class _EMapNavState extends State<EMapNav> {
   // }
   //
 
-  Future<void> getRoute(LatLng destination, String mode) async {
+  Future<void> getRoute() async {
     final String url = 'https://routes.googleapis.com/directions/v2:computeRoutes?key=$mapsApiKey';
 
     final response = await http.post(
       Uri.parse(url),
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-FieldMask": "routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline",
+      },
       body: json.encode({
         "origin": {"location": {"latLng": {"latitude": _currentPosition!.latitude, "longitude": _currentPosition!.longitude}}},
         "destination": {"location": {"latLng": {"latitude": _destination!.latitude, "longitude": _destination!.longitude}}},
-        "travelMode": mode.toUpperCase(),
+        "travelMode": _selectedMode.toUpperCase(),
       }),
     );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      final routes = data['routes'];
+      if (routes.isNotEmpty) {
+        final route = routes[0];
+        final distanceMeters = route['distanceMeters'];
+        final duration = route['duration'];
+        final encodedPolyline = route['polyline']['encodedPolyline'];
+
+        final polylinePoints = decodeEncodedPolyline(encodedPolyline);
+
+        _showRoute(polylinePoints);
+      }
     } else {
       print("Failed to retrieve the route: ${response.body}");
     }
+  }
+
+  List<LatLng> decodeEncodedPolyline(String encoded) {
+    var points = PolylinePoints().decodePolyline(encoded);
+    var latLngPoints = points
+        .map((point) => LatLng(point.latitude, point.longitude))
+        .toList();
+    return latLngPoints;
   }
 
   Map<PolylineId, Polyline> _polylines = {};
@@ -370,7 +393,7 @@ class _EMapNavState extends State<EMapNav> {
                   padding: const EdgeInsets.only(right: 16.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      // Implement navigation logic here
+                      getRoute();
                     },
                     child: const Text('Navigate'),
                   ),
