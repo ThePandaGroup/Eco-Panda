@@ -4,7 +4,7 @@ import './ecarbon_history.dart';
 import './page_template.dart';
 import './eleaderboards.dart';
 
-enum TransportMode { walking, biking, bus, carpooling }
+enum TransportMode { walking, bicycling, transit, driving }
 
 class EPandaHomepage extends StatefulWidget {
   const EPandaHomepage({super.key});
@@ -22,7 +22,6 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
         setState(() {
           _selectedMode = value;
         });
-        // Add additional logic for transportation mode selection here if needed
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: _selectedMode == value ? Color(0xFF3CC18F) : Colors.blueGrey[50],
@@ -116,8 +115,9 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                               ),
                               OutlinedButton(
                                 onPressed: () {
+                                  print('selected mode sent: ${_selectedMode}');
                                   Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => EMapNav()),
+                                    MaterialPageRoute(builder: (context) => EMapNav(selectedMode: _selectedMode)),
                                   );
                                 },
                                 style: OutlinedButton.styleFrom(

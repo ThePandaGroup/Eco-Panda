@@ -1,3 +1,4 @@
+import 'package:eco_panda/ehomepage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,7 +7,9 @@ import 'dart:convert';
 import './page_template.dart';
 
 class EMapNav extends StatefulWidget {
-  const EMapNav({super.key});
+  final TransportMode? selectedMode;
+
+  const EMapNav({Key? key, this.selectedMode}) : super(key: key);
 
   @override
   State<EMapNav> createState() => _EMapNavState();
@@ -15,14 +18,31 @@ class EMapNav extends StatefulWidget {
 class _EMapNavState extends State<EMapNav> {
   String mapsApiKey = "AIzaSyAtQi-0iBagmCc7MwUiEmgWDb_pF1abWeY";
   late GoogleMapController mapController;
+
+  String _selectedMode = 'driving';
+  final List<String> _transportModes = ['driving', 'walking', 'bicycling', 'transit'];
+
   final LatLng _defaultCenter = const LatLng(-23.5557714, -46.6395571);
   final TextEditingController _destinationController = TextEditingController();
   Map<MarkerId, Marker> markers = {};
 
   Position? _currentPosition;
+  LatLng? _destination;
 
   List<SuggestionWithDistance> _autocompleteSuggestions = [];
   bool _showAutocompleteSuggestions = false;
+
+  // Initialization
+
+  @override
+  void initState() {
+    super.initState();
+    String? currentMode = widget.selectedMode.toString().split('.').last;
+    print('received selected trnasport ${currentMode}');
+    if (widget.selectedMode != null) {
+      _selectedMode = widget.selectedMode.toString().split('.').last;
+    }
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -53,6 +73,8 @@ class _EMapNavState extends State<EMapNav> {
       ),
     ));
   }
+
+  // Destination auto-complete
 
   Future<String?> fetchUrl(Uri uri, {Map<String, String>? headers}) async {
     try {
@@ -117,6 +139,8 @@ class _EMapNavState extends State<EMapNav> {
     }
   }
 
+  // Mark selected destination
+
   Future<LatLng?> getDestinationCoordinates(String address) async {
     final queryParameters = {
       'address': address,
@@ -134,11 +158,13 @@ class _EMapNavState extends State<EMapNav> {
       if (body['status'] == 'OK') {
         final result = body['results'].first;
         final location = result['geometry']['location'];
+        _destination = LatLng(location['lat'], location['lng']);
         return LatLng(location['lat'], location['lng']);
       }
     } catch (e) {
       debugPrint(e.toString());
     }
+    _destination = null;
     return null;
   }
 
@@ -174,6 +200,70 @@ class _EMapNavState extends State<EMapNav> {
     });
   }
 
+  // Navigation
+
+  // Future<List<LatLng>> getRouteCoordinates(LatLng start, LatLng destination) async {
+  //   final String url = 'https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${destination.latitude},${destination.longitude}&key=$mapsApiKey';
+  //
+  //   try {
+  //     final response = await http.get(Uri.parse(url));
+  //     if (response.statusCode == 200) {
+  //       final data = json.decode(response.body);
+  //       var steps = data["routes"][0]["legs"][0]["steps"] as List;
+  //
+  //       List<LatLng> routeCoordinates = [];
+  //       for (var step in steps) {
+  //         final startLatLng = step["start_location"];
+  //         routeCoordinates.add(LatLng(startLatLng["lat"], startLatLng["lng"]));
+  //         final endLatLng = step["end_location"];
+  //         routeCoordinates.add(LatLng(endLatLng["lat"], endLatLng["lng"]));
+  //       }
+  //
+  //       return routeCoordinates;
+  //     }
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  //   return [];
+  // }
+  //
+
+  Future<void> getRoute(LatLng destination, String mode) async {
+    final String url = 'https://routes.googleapis.com/directions/v2:computeRoutes?key=$mapsApiKey';
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({
+        "origin": {"location": {"latLng": {"latitude": _currentPosition!.latitude, "longitude": _currentPosition!.longitude}}},
+        "destination": {"location": {"latLng": {"latitude": _destination!.latitude, "longitude": _destination!.longitude}}},
+        "travelMode": mode.toUpperCase(),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+    } else {
+      print("Failed to retrieve the route: ${response.body}");
+    }
+  }
+
+  Map<PolylineId, Polyline> _polylines = {};
+
+  void _showRoute(List<LatLng> routeCoordinates) {
+    final PolylineId id = PolylineId("route");
+    final Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.blue,
+      points: routeCoordinates,
+      width: 5,
+    );
+
+    setState(() {
+      _polylines[id] = polyline;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -193,6 +283,7 @@ class _EMapNavState extends State<EMapNav> {
                 zoomControlsEnabled: true,
                 onMapCreated: _onMapCreated,
                 markers: Set<Marker>.of(markers.values),
+                polylines: Set<Polyline>.of(_polylines.values),
                 initialCameraPosition: CameraPosition(
                   target: _defaultCenter,
                   zoom: 15.0,
@@ -250,11 +341,41 @@ class _EMapNavState extends State<EMapNav> {
                   separatorBuilder: (context, index) => const Divider(),
                 ),
               ),
-            ElevatedButton(
-              onPressed: () {
-                placeAutocomplete("Seattle");
-              },
-              child: Text('Navigate'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16.0, right: 8.0),
+                    child: DropdownButton<String>(
+                      value: _selectedMode,
+                      icon: const Icon(Icons.arrow_downward),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedMode = newValue!;
+                        });
+                      },
+                      items: _transportModes.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value[0].toUpperCase() + value.substring(1)),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+
+                // Navigate button
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Implement navigation logic here
+                    },
+                    child: const Text('Navigate'),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -264,7 +385,6 @@ class _EMapNavState extends State<EMapNav> {
 
   @override
   void dispose() {
-    // Dispose the controller when the widget is removed from the widget tree
     _destinationController.dispose();
     super.dispose();
   }
