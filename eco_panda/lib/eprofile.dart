@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import './page_template.dart';
 import './ecarbon_history.dart';
-import './emap_nav.dart';
 import './esettings.dart';
 
 // Alex is doing it lmao
@@ -245,13 +244,14 @@ class CustomOutlinedButton extends StatelessWidget {
         );
       },
       style: OutlinedButton.styleFrom(
+        backgroundColor: Colors.white.withOpacity(0.8),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text(pageName, style: const TextStyle(fontSize: 11)),
+          Text(pageName, style: const TextStyle(fontSize: 11, color: Colors.black)),
           const Icon(Icons.arrow_forward_ios, size: 16.0),
         ],
       ),
