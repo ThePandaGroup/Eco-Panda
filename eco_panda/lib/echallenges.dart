@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-// delete this import
-// Alex did it!
-
 class EChallenges extends StatefulWidget {
   const EChallenges({super.key});
 

@@ -35,17 +35,17 @@ class ProfileSetting extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16.0), // Add some padding inside the container
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         border: Border.all(
-          color: Colors.blue, // Set the color of the border
-          width: 2.0, // Set the width of the border
+          color: Colors.blue,
+          width: 2.0,
         ),
         color: Colors.yellow,
-        borderRadius: BorderRadius.circular(10), // Optional: if you want rounded corners
+        borderRadius: BorderRadius.circular(10),
       ),
       child: const Column(
-        mainAxisSize: MainAxisSize.min, // Use min to fit content
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Center(child:Text("Profile Setting",
             style: TextStyle(
@@ -71,8 +71,8 @@ class NotificationSetting extends StatelessWidget{
       padding: const EdgeInsets.all(16.0), // Add some padding inside the container
       decoration: BoxDecoration(
         border: Border.all(
-          color: Colors.blue, // Set the color of the border
-          width: 2.0, // Set the width of the border
+          color: Colors.blue,
+          width: 2.0,
         ),
         color: Colors.green,
         borderRadius: BorderRadius.circular(10), // Optional: if you want rounded corners
@@ -101,11 +101,11 @@ class AccessPrivilegeSetting extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16.0), // Add some padding inside the container
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         border: Border.all(
-          color: Colors.blue, // Set the color of the border
-          width: 2.0, // Set the width of the border
+          color: Colors.blue,
+          width: 2.0,
         ),
         color: Colors.lightBlueAccent,
         borderRadius: BorderRadius.circular(10), // Optional: if you want rounded corners
@@ -119,7 +119,7 @@ class AccessPrivilegeSetting extends StatelessWidget{
             fontWeight: FontWeight.bold,
             ),)
           ),
-          SizedBox(height: 10), // Add some space between the text and the first toggle
+          SizedBox(height: 10),
           ToggleContainerCard(featureText: "Camera"),
           ToggleContainerCard(featureText: "GPS"),
           ToggleContainerCard(featureText: "Contacts"),
@@ -138,13 +138,12 @@ class ProfilePictureEditing extends StatefulWidget {
 }
 
 class _ProfilePicState extends State<ProfilePictureEditing> {
-  File? _image; // Variable to hold the selected image
+  File? _image;
 
-  // Method to handle image selection from gallery
+
   Future<void> _pickImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    // If an image is picked, update the state with the new image
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
@@ -186,7 +185,7 @@ class ProfileNameSetting extends StatefulWidget {
 
 class _ProfileNameSettingState extends State<ProfileNameSetting> {
   final TextEditingController _nameController = TextEditingController();
-  String _profileName = "John Hougland"; // Initial profile name
+  String _profileName = "John Hougland";
 
   @override
   void dispose() {
@@ -243,7 +242,6 @@ class _ToggleContainerState extends State<ToggleContainerCard> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      // Optionally add decoration to the Container
       decoration: BoxDecoration(
         color: Colors.grey[200],
         borderRadius: BorderRadius.circular(10),
@@ -252,7 +250,7 @@ class _ToggleContainerState extends State<ToggleContainerCard> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Text(
-            widget.featureText, // Use the featureText parameter
+            widget.featureText,
             style: const TextStyle(fontSize: 16),
           ),
           Switch(
