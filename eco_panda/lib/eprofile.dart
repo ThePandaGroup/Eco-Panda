@@ -247,7 +247,6 @@ class CustomOutlinedButton extends StatelessWidget {
         backgroundColor: Colors.white.withOpacity(0.8),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        backgroundColor: Colors.white.withOpacity(0.5),
 
       ),
       child: Row(
