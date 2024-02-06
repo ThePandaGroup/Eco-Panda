@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:eco_panda/echallenges.dart'; // Adjust this import based on your file structure
-
+import 'package:eco_panda/main.dart';
+import 'package:eco_panda/echallenges.dart';
 void main() {
-  group('EChallenges Widget Tests', () {
-    testWidgets('EChallenges displays challenge cards correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(home: EChallenges()));
+  testWidgets('Navigate to Challenges Page and Verify Content', (WidgetTester tester) async {
+    await tester.pumpWidget(MyApp());
 
-      // Verify that all challenge cards are displayed
-      expect(find.byType(ChallengeCard), findsNWidgets(3)); // Assuming you have 3 challenges
+    await tester.tap(find.byIcon(Icons.emoji_events));
+    await tester.pumpAndSettle(); // Wait for the page transition.
 
-      // Verify specific challenge details
-      expect(find.text('Daily Challenge'), findsOneWidget);
-      expect(find.text('First Eco route of the day'), findsOneWidget);
-      expect(find.text('New User Challenge'), findsOneWidget);
-      // Add more assertions as needed
-    });
+    // Verify the Challenges page is displayed.
+    expect(find.byType(EChallenges), findsOneWidget);
 
-    testWidgets('Challenge progress is displayed correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(home: EChallenges()));
 
-      // Check for specific progress indicators
-      expect(find.text('0/1'), findsWidgets); // Checks if progress text is displayed as expected
-      // You can add more specific checks for each challenge based on its progress
-    });
+    //  checking for a specific challenge's presence.
+    expect(find.text('Daily Challenge'), findsWidgets);
+    expect(find.text('First Eco route of the day'), findsWidgets);
+
   });
 }

@@ -1,24 +1,22 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:eco_panda/main.dart'; // Update this with the path to your app's main file
-import 'package:eco_panda/ecarbon_history.dart'; // Update this with the path to your Carbon History page
+import 'package:eco_panda/main.dart';
+import 'package:eco_panda/ecarbon_history.dart';
 
 void main() {
   // Test to navigate from the homepage to the Carbon History page
   testWidgets('Navigate from HomePage to CarbonHistory', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp()); // Ensure this is your app's root widget.
 
-    // Find the button by looking for its child text.
+    await tester.pumpWidget(MyApp());
+
     final Finder carbonHistoryButton = find.widgetWithText(OutlinedButton, 'View Your Carbon Footprints History');
-    expect(carbonHistoryButton, findsOneWidget); // Verify that exactly one button is found.
+    expect(carbonHistoryButton, findsOneWidget);
 
-    // Tap the found button.
     await tester.tap(carbonHistoryButton);
-    await tester.pumpAndSettle(); // Wait for any navigation animations to complete.
+    await tester.pumpAndSettle();
 
-    // Verify that the CarbonHistory page is displayed.
+
     expect(find.byType(ECarbonHistory), findsOneWidget);
   });
 
