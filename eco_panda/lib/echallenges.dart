@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 // delete this import
 // Alex did it!
-import './emap_nav.dart';
 
 class EChallenges extends StatefulWidget {
   const EChallenges({super.key});
@@ -16,25 +15,27 @@ class _EChallengesState extends State<EChallenges> {
 
   static const String cTitle = 'Daily Challenge';
   static const String cDescrpt = 'First Eco route of the day';
+  static const int cProgress = 0; //fetch from data base, placeholder value for now
+  static const int cRequired = 1;
 
   static const String cTitleA = 'New User Challenge';
   static const String cDescriptA = 'Plan your first route';
+  static const int cProgressA = 0; //fetch from data base, placeholder value for now
+  static const int cRequiredA = 1;
 
   static const String cTitleB = 'Weekly Challenge';
   static const String cDescripB = 'I planned 10 rountes in the app !';
-
-  static const String cTitleC = 'Friendship Challenge';
-  static const String cDescripC = 'Add your first friend';
+  static const int cProgressB = 0; //fetch from data base, placeholder value for now
+  static const int cRequiredB = 10;
 
   @override
   Widget build(BuildContext context) {
     return const SingleChildScrollView(
         child:Column(
             children: [
-              ChallengeCard(title: cTitleA , description: cDescriptA ),
-              ChallengeCard(title: cTitle, description: cDescrpt),
-              ChallengeCard(title: cTitleB, description: cDescripB),
-              ChallengeCard(title: cTitleC, description: cDescripC)
+              ChallengeCard(title: cTitleA, description: cDescriptA, currentProgress: cProgressA, totalRequired: cRequiredA),
+              ChallengeCard(title: cTitle, description: cDescrpt, currentProgress: cProgress, totalRequired: cRequired),
+              ChallengeCard(title: cTitleB, description: cDescripB, currentProgress: cProgressB, totalRequired: cRequiredB),
             ]
         )
     );
@@ -45,8 +46,16 @@ class _EChallengesState extends State<EChallenges> {
 class ChallengeCard extends StatelessWidget {
   final String title ;
   final String description ;
+  final int currentProgress;
+  final int totalRequired;
 
-  const ChallengeCard({super.key, required this.title, required this.description});
+  const ChallengeCard({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.currentProgress,
+    required this.totalRequired,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +82,10 @@ class ChallengeCard extends StatelessWidget {
           subtitle: Text(description,
             style: const TextStyle(fontSize: 12),
           ),
-          trailing: const CustomOutlinedButton(),
+          trailing: ChallengeProgressIndicator(
+            currentProgress: currentProgress,
+            totalRequired: totalRequired,
+          ),
         ),
       ),
     );
@@ -81,32 +93,33 @@ class ChallengeCard extends StatelessWidget {
 }
 
 
-// The Join button
-class CustomOutlinedButton extends StatelessWidget {
-  const CustomOutlinedButton({super.key});
+// Challenge progress indicator
+class ChallengeProgressIndicator extends StatelessWidget {
+  final int currentProgress;
+  final int totalRequired;
+
+  const ChallengeProgressIndicator({
+    super.key,
+    required this.currentProgress,
+    required this.totalRequired,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => EMapNav()),
-        );
-      },
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.green, width: 2.0),
+        borderRadius: BorderRadius.circular(4.0),
       ),
-      child:  const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text('Join', style: TextStyle(fontSize: 11)),
-          Icon(Icons.arrow_forward_ios, size: 16.0),
-        ],
+      child: Text(
+        '$currentProgress/$totalRequired',
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Colors.green,
+        ),
       ),
     );
   }
 }
-
-
