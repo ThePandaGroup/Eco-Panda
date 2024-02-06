@@ -100,11 +100,11 @@ class AchievementSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column( // Changed from Row to Column
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0), // Adjust as needed
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
             'Your Eco-Profile Tracker',
             style: TextStyle(
@@ -113,8 +113,8 @@ class AchievementSection extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 10), // Add some spacing
-        HorizontalScrollableCards(), // This will now be below the text
+        SizedBox(height: 10),
+        HorizontalScrollableCards(),
       ],
     );
   }
@@ -129,7 +129,7 @@ class EcoHistorySection extends StatelessWidget{
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0), // Adjust as needed
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
             'Your Eco-Profile (Carbon History)',
             style: TextStyle(
@@ -156,7 +156,7 @@ class SettingSection extends StatelessWidget{
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0), // Adjust as needed
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
             'Setting',
             style: TextStyle(
@@ -175,9 +175,9 @@ class SettingSection extends StatelessWidget{
 
 
 class TemplateCard extends StatelessWidget {
-  final String backgroundImage; // Add backgroundImage parameter
+  final String backgroundImage;
   final String actiontxt;
-  final double width; // Add width parameter
+  final double width;
   final double height;
   final resPage;// Add height parameter
 
@@ -187,14 +187,14 @@ class TemplateCard extends StatelessWidget {
     required this.actiontxt,
     this.width = 400.0, // Default width
     this.height = 100.0,
-    required this.resPage, // Default height
+    required this.resPage,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width, // Set the width
-      height: height, // Set the height
+      width: width,
+      height: height,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(
         border: Border.all(
@@ -203,13 +203,13 @@ class TemplateCard extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(4.0),
         image: DecorationImage(
-          image: AssetImage(backgroundImage), // Use the backgroundImage
-          fit: BoxFit.cover, // Cover the container bounds
+          image: AssetImage(backgroundImage),
+          fit: BoxFit.cover,
         ),
       ),
       child: Card(
         margin: EdgeInsets.zero,
-        color: Colors.transparent, // Make the Card background transparent to show the Container's background
+        color: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4.0),
         ),
@@ -247,6 +247,8 @@ class CustomOutlinedButton extends StatelessWidget {
         backgroundColor: Colors.white.withOpacity(0.8),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        backgroundColor: Colors.white.withOpacity(0.5),
+
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -275,7 +277,7 @@ class HorizontalScrollableCards extends StatelessWidget {
           ImageBackgroundCard(backgroundImage: "assets/environmental_background.png", text: "First Challenge !!!"),
           ImageBackgroundCard(backgroundImage: "assets/environmental_background.png", text: "First Challenge !!!"),
           ImageBackgroundCard(backgroundImage: "assets/environmental_background.png", text: "First Challenge !!!"),
-          // Add more cards as needed
+
         ],
       ),
     );
@@ -304,10 +306,10 @@ class ImageBackgroundCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      clipBehavior: Clip.antiAlias, // Ensures the image is clipped to the card's border radius
+      clipBehavior: Clip.antiAlias,
       child: Container(
         width: width,
-        height: width, // Set height equal to width to make it a square
+        height: width,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(backgroundImage),
@@ -356,7 +358,6 @@ class CustomContainerCardWithBackground extends CustomContainerCard {
 
   @override
   Widget build(BuildContext context) {
-    // Use the same structure but add a BoxDecoration with an image
     return Container(
       width: double.infinity,
       margin: margin,
@@ -373,7 +374,7 @@ class CustomContainerCardWithBackground extends CustomContainerCard {
       ),
       child: Card(
         margin: EdgeInsets.zero,
-        color: Colors.transparent, // Make card background transparent
+        color: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),
