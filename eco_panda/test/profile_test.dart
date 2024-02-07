@@ -5,7 +5,6 @@ import 'package:eco_panda/eprofile.dart';
 
 void main() {
   testWidgets('Profile Page Test', (WidgetTester tester) async {
-    // Build our app and trigger a frame
     await tester.pumpWidget(MaterialApp(home: EPageTemplate()));
 
     // Tap the bottom navigation bar item for Profile
@@ -22,7 +21,7 @@ void main() {
     // Verify the Edit Profile button is present
     expect(find.text('Edit Profile'), findsOneWidget);
 
-    // Tap on the Edit Profile button if you want to test navigation from it
+    // Tap on the Edit Profile button
     await tester.tap(find.text('Edit Profile'));
     await tester.pumpAndSettle();
   });
