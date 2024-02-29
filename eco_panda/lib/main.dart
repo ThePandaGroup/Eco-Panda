@@ -1,8 +1,25 @@
+import 'package:eco_panda/firebase_options.dart';
+import 'package:eco_panda/instances/challenges_instance.dart';
 import 'package:flutter/material.dart';
 import './page_template.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'instances/users_instance.dart';
 
 
-void main() {
+
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // try {
+  //   uploadUsers();
+  //   uploadChallenges();
+  // } catch (e) {
+  //   print('Failed to upload users: $e');
+  // }
   runApp(const MyApp());
 }
 

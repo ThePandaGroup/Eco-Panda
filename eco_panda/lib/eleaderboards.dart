@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_panda/page_template.dart';
 import 'package:flutter/material.dart';
 
@@ -9,8 +10,23 @@ class ELeaderboards extends StatefulWidget {
 }
 
 class _ELeaderboardsState extends State<ELeaderboards> {
+  // Future<List<Map<String, dynamic>>> getGlobalLeaderboard() async {
+  //   return List.generate(10, (index) => {"name": "User ${index + 1}", "points": 100 - index});
+  // }
+
   Future<List<Map<String, dynamic>>> getGlobalLeaderboard() async {
-    return List.generate(10, (index) => {"name": "User ${index + 1}", "points": 100 - index});
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .orderBy('ecoScore', descending: true)
+        .limit(10)
+        .get();
+    return snapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return {
+        'name': data['username'] ?? 'N/A',
+        'points': data['ecoScore'] ?? 0,
+      };
+    }).toList();
   }
 
   Future<Map<String, dynamic>> getUserRank() async {

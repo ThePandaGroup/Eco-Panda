@@ -31,6 +31,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
+        }
     }
 
     kotlinOptions {
@@ -65,7 +68,9 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+
+}
 
 secrets {
     // Optionally specify a different file name containing your secrets.
@@ -81,3 +86,5 @@ secrets {
     ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
     ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
 }
+
+apply plugin: 'com.google.gms.google-services'
