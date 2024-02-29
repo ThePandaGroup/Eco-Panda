@@ -41,6 +41,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   image_picker: ^1.0.7
   fl_chart: ^0.66.1
+  hive: ^2.2.3
 
 dev_dependencies:
   flutter_test:
