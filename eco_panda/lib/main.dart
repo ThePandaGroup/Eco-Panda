@@ -14,12 +14,12 @@ void main() async{
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  try {
-    uploadUsers();
-    // uploadChallenges();
-  } catch (e) {
-    print('Failed to upload users: $e');
-  }
+  // try {
+  //   uploadUsers();
+  //   uploadChallenges();
+  // } catch (e) {
+  //   print('Failed to upload users: $e');
+  // }
   runApp(const MyApp());
 }
 
