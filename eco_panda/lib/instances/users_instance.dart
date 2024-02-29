@@ -9,8 +9,8 @@ List<User> users = List<User>.generate(
     carbonFootprintScore: i * 10,
     ecoScore: i * 20,
     history: [
-      {'date': '2022-01-01', 'score': i * 5},
-      {'date': '2022-01-02', 'score': i * 6},
+      {'date': '2022-01', 'score': i * 5},
+      {'date': '2022-02', 'score': i * 6},
     ],
   ),
 );
