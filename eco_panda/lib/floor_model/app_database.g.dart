@@ -95,7 +95,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`userId` INTEGER PRIMARY KEY AUTOINCREMENT, `userName` TEXT NOT NULL, `picPath` TEXT NOT NULL, `carbonFootprintScore` INTEGER NOT NULL, `ecoScore` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `User` (`userId` INTEGER PRIMARY KEY AUTOINCREMENT, `cloudUserId` INTEGER NOT NULL, `userName` TEXT NOT NULL, `picPath` TEXT NOT NULL, `carbonFootprintScore` INTEGER NOT NULL, `ecoScore` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` INTEGER NOT NULL)');
         await database.execute(
@@ -103,7 +103,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Leaderboard` (`leaderboardId` INTEGER PRIMARY KEY AUTOINCREMENT, `rankScore` INTEGER NOT NULL, `rankerName` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Destination` (`destinationId` INTEGER PRIMARY KEY AUTOINCREMENT, `lastitude` REAL NOT NULL, `longitude` REAL NOT NULL, `carbonFootprintScore` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Destination` (`destinationId` INTEGER PRIMARY KEY AUTOINCREMENT, `address` TEXT NOT NULL, `lastitude` REAL NOT NULL, `longitude` REAL NOT NULL, `carbonFootprintScore` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Setting` (`settingType` TEXT NOT NULL, `on` INTEGER NOT NULL, PRIMARY KEY (`settingType`))');
 
@@ -156,6 +156,7 @@ class _$UserDao extends UserDao {
             'User',
             (User item) => <String, Object?>{
                   'userId': item.userId,
+                  'cloudUserId': item.cloudUserId,
                   'userName': item.userName,
                   'picPath': item.picPath,
                   'carbonFootprintScore': item.carbonFootprintScore,
@@ -167,6 +168,7 @@ class _$UserDao extends UserDao {
             ['userId'],
             (User item) => <String, Object?>{
                   'userId': item.userId,
+                  'cloudUserId': item.cloudUserId,
                   'userName': item.userName,
                   'picPath': item.picPath,
                   'carbonFootprintScore': item.carbonFootprintScore,
@@ -492,6 +494,7 @@ class _$DestinationDao extends DestinationDao {
             'Destination',
             (Destination item) => <String, Object?>{
                   'destinationId': item.destinationId,
+                  'address': item.address,
                   'lastitude': item.lastitude,
                   'longitude': item.longitude,
                   'carbonFootprintScore': item.carbonFootprintScore
@@ -502,6 +505,7 @@ class _$DestinationDao extends DestinationDao {
             ['destinationId'],
             (Destination item) => <String, Object?>{
                   'destinationId': item.destinationId,
+                  'address': item.address,
                   'lastitude': item.lastitude,
                   'longitude': item.longitude,
                   'carbonFootprintScore': item.carbonFootprintScore
@@ -523,6 +527,7 @@ class _$DestinationDao extends DestinationDao {
         'SELECT * FROM Destination ORDER BY destinationId DESC LIMIT 5',
         mapper: (Map<String, Object?> row) => Destination(
             destinationId: row['destinationId'] as int?,
+            address: row['address'] as String,
             lastitude: row['lastitude'] as double,
             longitude: row['longitude'] as double,
             carbonFootprintScore: row['carbonFootprintScore'] as int));

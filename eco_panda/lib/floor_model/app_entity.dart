@@ -7,6 +7,7 @@ class User{
   @PrimaryKey(autoGenerate: true)
   final int? userId;
 
+  final int cloudUserId;
   final String userName;
   final String picPath;
   final int carbonFootprintScore;
@@ -14,6 +15,7 @@ class User{
 
   User({
     this.userId,
+    required this.cloudUserId,
     required this.userName,
     required this.picPath,
     required this.carbonFootprintScore,
@@ -78,6 +80,7 @@ class Destination{
   @PrimaryKey(autoGenerate: true)
   final int? destinationId;
 
+  final String address;
   final double lastitude;
   final double longitude;
   final int carbonFootprintScore;
@@ -85,6 +88,7 @@ class Destination{
 
   Destination({
     this.destinationId,
+    required this.address,
     required this.lastitude,
     required this.longitude,
     required this. carbonFootprintScore
