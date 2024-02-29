@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:eco_panda/ehomepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -27,6 +29,7 @@ class _EMapNavState extends State<EMapNav> {
   final LatLng _defaultCenter = const LatLng(-23.5557714, -46.6395571);
   final TextEditingController _destinationController = TextEditingController();
   Map<MarkerId, Marker> markers = {};
+  Map<PolylineId, Polyline> _polylines = {};
 
   Position? _currentPosition;
   LatLng? _destination;
@@ -38,6 +41,9 @@ class _EMapNavState extends State<EMapNav> {
   int pathDurationSecs = 0;
   DateTime estimatedArrivalTime = DateTime.now();
   bool showEst = false;
+
+  StreamSubscription<Position>? _positionStreamSubscription;
+
 
   // Initialization
 
@@ -54,6 +60,15 @@ class _EMapNavState extends State<EMapNav> {
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     _locateMe();
+  }
+
+  void animateCamera(Position position) {
+    mapController.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+        target: LatLng(position.latitude, position.longitude),
+        zoom: 15.0,
+      ),
+    ));
   }
 
   Future<void> _locateMe() async {
@@ -73,12 +88,7 @@ class _EMapNavState extends State<EMapNav> {
     }
 
     _currentPosition = await Geolocator.getCurrentPosition();
-    mapController.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(
-        target: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-        zoom: 15.0,
-      ),
-    ));
+    animateCamera(_currentPosition!);
   }
 
   // Destination auto-complete
@@ -182,7 +192,7 @@ class _EMapNavState extends State<EMapNav> {
       mapController.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           target: coordinates,
-          zoom: 14.0,
+          zoom: 15.0,
         ),
       ));
       addDestinationMarker(coordinates);
@@ -195,7 +205,7 @@ class _EMapNavState extends State<EMapNav> {
     final marker = Marker(
       markerId: markerId,
       position: destinationCoords,
-      infoWindow: InfoWindow(
+      infoWindow: const InfoWindow(
         title: 'Destination',
         snippet: 'Your destination point',
       ),
@@ -239,6 +249,7 @@ class _EMapNavState extends State<EMapNav> {
         _showRoute(polylinePoints);
         parseEstimatedTime(duration);
         calculateCarbonFootprint(_selectedMode, distanceMeters);
+        startMonitoringLocation(_destination!, 30);
       }
     } else {
       print("Failed to retrieve the route: ${response.body}");
@@ -270,7 +281,9 @@ class _EMapNavState extends State<EMapNav> {
         break;
     }
 
-    earnedCarbonPts = 10 + (co2PerKm * (distanceM / 1000)) ~/ 1000;
+    setState(() {
+      earnedCarbonPts = 10 + co2PerKm * distanceM ~/ 1000;
+    });
   }
 
   // Display polyline
@@ -282,8 +295,6 @@ class _EMapNavState extends State<EMapNav> {
         .toList();
     return latLngPoints;
   }
-
-  Map<PolylineId, Polyline> _polylines = {};
 
   void _showRoute(List<LatLng> routeCoordinates) {
     final PolylineId id = PolylineId("route");
@@ -297,6 +308,70 @@ class _EMapNavState extends State<EMapNav> {
     setState(() {
       _polylines[id] = polyline;
     });
+  }
+
+  // Monitoring user's location
+
+  void startMonitoringLocation(LatLng destination, double radius) {
+    var locationSettings = const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10,
+    );
+
+    _positionStreamSubscription = Geolocator.getPositionStream(locationSettings: locationSettings).listen((Position? position) {
+        if (position != null) {
+          animateCamera(position);
+          double distance = Geolocator.distanceBetween(
+            position.latitude,
+            position.longitude,
+            destination.latitude,
+            destination.longitude,
+          );
+
+          if (distance <= radius) {
+            print("User has arrived at the destination.");
+            finishingRoute();
+          }
+        }
+      },
+    );
+  }
+
+  void finishingRoute() {
+    _positionStreamSubscription?.cancel();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Congratulations!'),
+          content: Text('You earned $earnedCarbonPts pts!'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                setState(() async {
+                  showEst = false;
+                  markers = {};
+                  _polylines = {};
+
+                  _currentPosition = await Geolocator.getCurrentPosition();
+                  _destination = null;
+
+                  _autocompleteSuggestions = [];
+                  _showAutocompleteSuggestions = false;
+
+                  earnedCarbonPts = 0;
+                  pathDurationSecs = 0;
+                  estimatedArrivalTime = DateTime.now();
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -447,11 +522,11 @@ class _EMapNavState extends State<EMapNav> {
   @override
   void dispose() {
     _destinationController.dispose();
+    _positionStreamSubscription?.cancel();
     super.dispose();
   }
 }
 
-// Placeholder for a suggestion object that includes distance
 class SuggestionWithDistance {
   final String suggestion;
   final double distance;
