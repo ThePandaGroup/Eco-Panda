@@ -33,13 +33,17 @@ class _EMapNavState extends State<EMapNav> {
   List<SuggestionWithDistance> _autocompleteSuggestions = [];
   bool _showAutocompleteSuggestions = false;
 
+  int earnedCarbonPts = 0;
+  int pathDurationSecs = 0;
+  DateTime? estimatedArrivalTime;
+
   // Initialization
 
   @override
   void initState() {
     super.initState();
     String? currentMode = widget.selectedMode.toString().split('.').last;
-    print('received selected trnasport ${currentMode}');
+    print('received selected transport ${currentMode}');
     if (widget.selectedMode != null) {
       _selectedMode = widget.selectedMode.toString().split('.').last;
     }
@@ -54,14 +58,14 @@ class _EMapNavState extends State<EMapNav> {
     LocationPermission permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.deniedForever || permission == LocationPermission.denied) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Center(
             child: Text('Location permission denied. Returning to the homepage...'),
           ),
           duration: Duration(seconds: 3),
         ),
       );
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 3));
       Navigator.of(context).pop();
       return;
     }
@@ -203,32 +207,6 @@ class _EMapNavState extends State<EMapNav> {
 
   // Navigation
 
-  // Future<List<LatLng>> getRouteCoordinates(LatLng start, LatLng destination) async {
-  //   final String url = 'https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${destination.latitude},${destination.longitude}&key=$mapsApiKey';
-  //
-  //   try {
-  //     final response = await http.get(Uri.parse(url));
-  //     if (response.statusCode == 200) {
-  //       final data = json.decode(response.body);
-  //       var steps = data["routes"][0]["legs"][0]["steps"] as List;
-  //
-  //       List<LatLng> routeCoordinates = [];
-  //       for (var step in steps) {
-  //         final startLatLng = step["start_location"];
-  //         routeCoordinates.add(LatLng(startLatLng["lat"], startLatLng["lng"]));
-  //         final endLatLng = step["end_location"];
-  //         routeCoordinates.add(LatLng(endLatLng["lat"], endLatLng["lng"]));
-  //       }
-  //
-  //       return routeCoordinates;
-  //     }
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  //   return [];
-  // }
-  //
-
   Future<void> getRoute() async {
     final String url = 'https://routes.googleapis.com/directions/v2:computeRoutes?key=$mapsApiKey';
 
@@ -257,11 +235,43 @@ class _EMapNavState extends State<EMapNav> {
         final polylinePoints = decodeEncodedPolyline(encodedPolyline);
 
         _showRoute(polylinePoints);
+        parseEstimatedTime(duration);
+        calculateCarbonFootprint(_selectedMode, distanceMeters);
       }
     } else {
       print("Failed to retrieve the route: ${response.body}");
     }
   }
+
+  void parseEstimatedTime(String duration) {
+    final RegExp regExp = RegExp(r'(\d+)');
+    final String numPart = regExp.firstMatch(duration)?.group(1) ?? "0";
+
+    pathDurationSecs = int.parse(numPart);
+
+    DateTime currentTime = DateTime.now();
+    estimatedArrivalTime = currentTime.add(Duration(seconds: pathDurationSecs));
+  }
+
+  void calculateCarbonFootprint(String mode, int distanceM) {
+    int co2PerKm = 0;
+    switch (mode) {
+      case 'walk':
+      case 'bicycle':
+        co2PerKm = 120;
+        break;
+      case 'transit':
+        co2PerKm = 68;
+        break;
+      case 'drive':
+        co2PerKm = 0;
+        break;
+    }
+
+    earnedCarbonPts = (co2PerKm * (distanceM / 1000)) ~/ 1000;
+  }
+
+  // Display polyline
 
   List<LatLng> decodeEncodedPolyline(String encoded) {
     var points = PolylinePoints().decodePolyline(encoded);
