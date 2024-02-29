@@ -4,6 +4,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 import './page_template.dart';
 
@@ -35,7 +36,8 @@ class _EMapNavState extends State<EMapNav> {
 
   int earnedCarbonPts = 0;
   int pathDurationSecs = 0;
-  DateTime? estimatedArrivalTime;
+  DateTime estimatedArrivalTime = DateTime.now();
+  bool showEst = false;
 
   // Initialization
 
@@ -246,11 +248,11 @@ class _EMapNavState extends State<EMapNav> {
   void parseEstimatedTime(String duration) {
     final RegExp regExp = RegExp(r'(\d+)');
     final String numPart = regExp.firstMatch(duration)?.group(1) ?? "0";
-
     pathDurationSecs = int.parse(numPart);
 
     DateTime currentTime = DateTime.now();
     estimatedArrivalTime = currentTime.add(Duration(seconds: pathDurationSecs));
+    showEst = true;
   }
 
   void calculateCarbonFootprint(String mode, int distanceM) {
@@ -268,7 +270,7 @@ class _EMapNavState extends State<EMapNav> {
         break;
     }
 
-    earnedCarbonPts = (co2PerKm * (distanceM / 1000)) ~/ 1000;
+    earnedCarbonPts = 10 + (co2PerKm * (distanceM / 1000)) ~/ 1000;
   }
 
   // Display polyline
@@ -312,17 +314,43 @@ class _EMapNavState extends State<EMapNav> {
         body: Column(
           children: [
             Expanded(
-              child: GoogleMap(
-                zoomControlsEnabled: true,
-                onMapCreated: _onMapCreated,
-                markers: Set<Marker>.of(markers.values),
-                polylines: Set<Polyline>.of(_polylines.values),
-                initialCameraPosition: CameraPosition(
-                  target: _defaultCenter,
-                  zoom: 15.0,
-                ),
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
+              flex: 5,
+              child: Stack (
+                children: [
+                  GoogleMap(
+                    zoomControlsEnabled: true,
+                    onMapCreated: _onMapCreated,
+                    markers: Set<Marker>.of(markers.values),
+                    polylines: Set<Polyline>.of(_polylines.values),
+                    initialCameraPosition: CameraPosition(
+                      target: _defaultCenter,
+                      zoom: 15.0,
+                    ),
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: true,
+                  ),
+                  if (showEst)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 40,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Text("Est. Carbon Footprints Pts Earned: $earnedCarbonPts"),
+                                Text("Est. Arrival Time: ${DateFormat('HH:mm').format(estimatedArrivalTime)}"),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             Padding(

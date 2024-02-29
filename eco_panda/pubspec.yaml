@@ -35,6 +35,7 @@ dependencies:
   geolocator: ^10.1.0
   http: ^1.2.0
   flutter_polyline_points: ^2.0.0
+  intl: ^0.19.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -43,7 +44,6 @@ dependencies:
   fl_chart: ^0.66.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  hive_generator: ^2.0.1
   firebase_core: ^2.25.5
 
 dev_dependencies:
