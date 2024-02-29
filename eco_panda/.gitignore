@@ -10,6 +10,10 @@
 .svn/
 migrate_working_dir/
 
+README.md
+Wireframe.pdf
+
+
 # IntelliJ related
 *.iml
 *.ipr
