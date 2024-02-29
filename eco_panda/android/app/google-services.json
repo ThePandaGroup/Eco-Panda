@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "62935483043",
+    "project_id": "eco-panda-2bd29",
+    "storage_bucket": "eco-panda-2bd29.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62935483043:android:d511e473e00c88c05bb516",
+        "android_client_info": {
+          "package_name": "com.example.eco_panda"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7RdGhkvRZV8HlO2ltXny4QRFh2j0Kd-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
