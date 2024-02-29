@@ -1,12 +1,9 @@
 import 'package:eco_panda/firebase_options.dart';
-import 'package:eco_panda/instances/challenges_instance.dart';
+import 'package:eco_panda/floor_model/app_database.dart';
 import 'package:flutter/material.dart';
 import './page_template.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'instances/users_instance.dart';
-
-
-
+import 'package:provider/provider.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,13 +11,14 @@ void main() async{
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // try {
-  //   uploadUsers();
-  //   uploadChallenges();
-  // } catch (e) {
-  //   print('Failed to upload users: $e');
-  // }
-  runApp(const MyApp());
+  final AppDatabase localDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+
+  runApp(
+    Provider<AppDatabase>(
+      create: (_) => localDb,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
