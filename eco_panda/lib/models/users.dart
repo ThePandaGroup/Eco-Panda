@@ -4,6 +4,7 @@ class User {
   int carbonFootprintScore;
   int ecoScore;
   List<Map<String, dynamic>> history;
+  List<Map<String, dynamic>> challengesCompleted;
 
 
 
@@ -13,15 +14,17 @@ class User {
     required this.carbonFootprintScore,
     required this.ecoScore,
     required this.history,
+    required this.challengesCompleted,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'username': username,
-      'carbonFootprintScore': carbonFootprintScore,
+      'carbon footprint score': carbonFootprintScore,
       'ecoScore': ecoScore,
       'history': history,
+      'challenges completed': challengesCompleted,
     };
   }
 }

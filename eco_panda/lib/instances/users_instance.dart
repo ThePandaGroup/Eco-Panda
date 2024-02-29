@@ -12,6 +12,11 @@ List<User> users = List<User>.generate(
       {'date': '2022-01', 'carbon score': i * 5},
       {'date': '2022-02', 'carbon score': i * 6},
     ],
+    challengesCompleted: [
+
+      {'challenge id':'1', 'progress': i * 2},
+      {'challenge id':'2', 'progress': i * 3},
+    ],
   ),
 );
 
