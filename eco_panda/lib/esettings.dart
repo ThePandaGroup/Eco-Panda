@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import './page_template.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io'; // Import dart:io for file handling
+import 'dart:io';
 
 // Alex is doing it
 class ESettings extends StatefulWidget {
