@@ -342,13 +342,21 @@ class _EMapNavState extends State<EMapNav> {
 
   void finishingRoute() async {
     _positionStreamSubscription?.cancel();
-    Destination newDestination = Destination(address: await getPlaceName(), latitude: _destination!.latitude, longitude: _destination!.longitude, carbonFootprintScore: earnedCarbonPts);
 
-    resetState();
+    final placeName = await getPlaceName();
+    final newDestination = Destination(
+      address: placeName,
+      latitude: _destination!.latitude,
+      longitude: _destination!.longitude,
+      carbonFootprintScore: earnedCarbonPts,
+    );
+
     await addDestination(newDestination);
+    resetState();
   }
 
-  void resetState() {
+  void resetState() async {
+    final currentPosition = await Geolocator.getCurrentPosition();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -360,16 +368,16 @@ class _EMapNavState extends State<EMapNav> {
               child: Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
-
-                setState(() async {
+                setState(() {
                   showEst = false;
-                  markers = {};
-                  _polylines = {};
+                  markers.clear();
+                  _polylines.clear();
+                  _destinationController.clear();
 
-                  _currentPosition = await Geolocator.getCurrentPosition();
+                  _currentPosition = currentPosition;
                   _destination = null;
 
-                  _autocompleteSuggestions = [];
+                  _autocompleteSuggestions.clear();
                   _showAutocompleteSuggestions = false;
 
                   earnedCarbonPts = 0;
@@ -402,21 +410,17 @@ class _EMapNavState extends State<EMapNav> {
     return 'unknown';
   }
 
-  // update db for new routes
+  // update db for new routes - only store last 5 routes destination
 
   Future<void> addDestination(Destination destination) async {
-    List<Destination> pastDestination = [];
     final localDb = Provider.of<AppDatabase>(context, listen: false);
+
     await localDb.destinationDao.insertDestination(destination);
 
     final records = await localDb.destinationDao.retrievePastDestinations();
 
-    setState(() {
-      pastDestination = List.from(records.reversed);
-    });
-
-    if (pastDestination.length > 5) {
-      await localDb.destinationDao.deleteDestination(pastDestination.last);
+    if (records.length > 5) {
+      await localDb.destinationDao.deleteDestination(records.last);
     }
   }
 
