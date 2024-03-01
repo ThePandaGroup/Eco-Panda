@@ -523,8 +523,7 @@ class _$DestinationDao extends DestinationDao {
 
   @override
   Future<List<Destination>> retrieveDestinationsDescending() async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM Destination ORDER BY destinationId DESC LIMIT 5',
+    return _queryAdapter.queryList('SELECT * FROM Destination',
         mapper: (Map<String, Object?> row) => Destination(
             destinationId: row['destinationId'] as int?,
             address: row['address'] as String,

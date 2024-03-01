@@ -104,8 +104,8 @@ abstract class DestinationDao {
   @insert
   Future<void> insertDestination(Destination destination);
 
-  // Retrieve the last 5 destinations ordered by destinationId in descending order
-  @Query('SELECT * FROM Destination ORDER BY destinationId DESC LIMIT 5')
+  // Retrieve all records
+  @Query('SELECT * FROM Destination')
   Future<List<Destination>> retrieveDestinationsDescending();
 
   // Delete a destination
