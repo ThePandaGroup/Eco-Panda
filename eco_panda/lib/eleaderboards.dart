@@ -54,7 +54,7 @@ class _ELeaderboardsState extends State<ELeaderboards> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text('Top 10 Users', style: Theme.of(context).textTheme.headline6),
+                        child: Text('Top 10 Users', style: Theme.of(context).textTheme.titleLarge),
                       ),
                       Expanded(
                         child: ListView.builder(
