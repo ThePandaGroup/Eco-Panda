@@ -1,9 +1,10 @@
 import 'package:eco_panda/firebase_options.dart';
 import 'package:eco_panda/floor_model/app_database.dart';
 import 'package:flutter/material.dart';
-import './page_template.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'auth_gate.dart';
+
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,17 +24,33 @@ void main() async{
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Your App Title',
+      title: 'Eco-Panda',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const EPageTemplate(),
+      home: const AuthGate(),
     );
   }
 }
+
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+//
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Your App Title',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//         visualDensity: VisualDensity.adaptivePlatformDensity,
+//       ),
+//       home: const EPageTemplate(),
+//     );
+//   }
+// }
