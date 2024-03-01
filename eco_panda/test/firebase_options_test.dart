@@ -1,7 +1,6 @@
 import 'package:eco_panda/firebase_options.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
-import 'package:eco_panda/firebase_options.dart'; // Adjust the import path as needed
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
