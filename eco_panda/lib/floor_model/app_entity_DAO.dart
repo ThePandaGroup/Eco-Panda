@@ -6,6 +6,9 @@ abstract class UserDao {
   @insert
   Future<void> insertUser(User user);
 
+  @Query("SELECT * FROM User")
+  Future<List<User>> retrieveOnlyUser();
+
   @Query("UPDATE User SET picPath = :picPath WHERE userId = :userId")
   Future<void> updatePicPath(int userId, String picPath);
 
