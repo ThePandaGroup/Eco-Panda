@@ -1,7 +1,8 @@
+import 'package:eco_panda/ehomepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:eco_panda/main.dart'; // Adjust this import based on your app's structure
-
+import 'package:eco_panda/emap_nav.dart';
 
 void main() {
   testWidgets('Navigate from Home to Seattle University', (WidgetTester tester) async {
@@ -34,6 +35,27 @@ void main() {
 
   });
 
+  testWidgets('Test dropdown selection', (WidgetTester tester) async {
+    await tester.pumpWidget(MaterialApp(home: EMapNav()));
+
+    // Find the DropdownButton widget
+    final Finder dropdownButtonFinder = find.byType(DropdownButton<String>);
+
+    // Tap on the dropdown button to open the dropdown menu
+    await tester.tap(dropdownButtonFinder);
+    await tester.pumpAndSettle();
+
+    // Find the menu item for the first mode and tap on it
+    final Finder firstModeFinder = find.byWidgetPredicate(
+          (Widget widget) => widget is DropdownMenuItem<String>,
+    ).first;
+    await tester.tap(firstModeFinder);
+    await tester.pumpAndSettle();
+
+    // Verify that the DropdownButton now displays the first mode
+    final dropdownButton = tester.widget<DropdownButton<String>>(dropdownButtonFinder);
+    expect(dropdownButton.value, equals('transit')); // Assuming 'transit' is the first mode
+  });
 
 
 
