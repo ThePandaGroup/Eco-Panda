@@ -8,7 +8,6 @@ class SyncManager {
 
   SyncManager(this.localDatabase, this.firebaseFirestore);
 
-  // ... rest of your code
   Future<void> syncAll() async {
     await syncUsers();
     await syncChallenges();

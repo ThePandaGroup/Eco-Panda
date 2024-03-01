@@ -58,8 +58,8 @@ class _ELeaderboardsState extends State<ELeaderboards> {
                             }
                             return ListTile(
                               leading: leadingIcon,
-                              title: Text(entry["name"]),
-                              trailing: Text('${entry["points"]} pts'),
+                              title: Text(entry["name"] ?? "Unknown"),
+                              trailing: Text('${entry["points"] ?? 0} pts'),
                             );
                           },
                         ),
@@ -108,7 +108,13 @@ class FirebaseLeaderboardService implements LeaderboardService {
         .orderBy('ecoScore', descending: true)
         .limit(10)
         .get();
-    return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    return snapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return {
+        'name': data['username'] ?? 'N/A',
+        'points': data['ecoScore'] ?? 0,
+      };
+    }).toList();
   }
 
   @override
