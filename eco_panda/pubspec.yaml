@@ -35,7 +35,7 @@ dependencies:
   geolocator: ^10.1.0
   http: ^1.2.0
   flutter_polyline_points: ^2.0.0
-  intl: ^0.19.0
+  intl: ^0.18.1
   provider: ^6.1.1
 
   # The following adds the Cupertino Icons font to your application.
@@ -48,6 +48,8 @@ dependencies:
   firebase_core: ^2.25.5
   firebase_remote_config: ^4.3.15
   cloud_firestore: ^4.15.6
+  firebase_auth: ^4.17.6
+  firebase_ui_auth: ^1.13.1
   mockito: ^5.4.4
   full_coverage: ^1.0.0
 
