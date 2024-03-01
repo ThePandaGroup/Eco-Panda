@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import './ehomepage.dart';
 import './eprofile.dart';
@@ -6,8 +7,38 @@ import './echallenges.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   CustomAppBar({Key? key}) : preferredSize = Size.fromHeight(kToolbarHeight), super(key: key);
 
+  void _signOut(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Sign Out"),
+          content: const Text("Are you sure you want to sign out?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Sign Out"),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await FirebaseAuth.instance.signOut();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pop();
+  }
+
   @override
-  final Size preferredSize; // default is 56.0
+  final Size preferredSize;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +58,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.exit_to_app),
+          onPressed: () => _signOut(context),
+        ),
+      ],
     );
   }
 }
