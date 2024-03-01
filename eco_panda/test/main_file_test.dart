@@ -2,8 +2,13 @@ import 'package:eco_panda/page_template.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:eco_panda/main.dart';
 import 'package:flutter/material.dart';
+import 'package:mockito/mockito.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+class MockFirebaseApp extends Mock implements FirebaseApp {}
 
 void main() {
+
   testWidgets('MyApp widget is rendered', (WidgetTester tester) async {
     await tester.pumpWidget(MyApp());
 

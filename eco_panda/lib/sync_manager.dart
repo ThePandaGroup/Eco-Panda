@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'floor_model/app_database.dart';
 
 class SyncManager {
+
   final AppDatabase localDatabase;
-  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseFirestore firebaseFirestore;
 
-  SyncManager(this.localDatabase);
+  SyncManager(this.localDatabase, this.firebaseFirestore);
 
+  // ... rest of your code
   Future<void> syncAll() async {
     await syncUsers();
     await syncChallenges();

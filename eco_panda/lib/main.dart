@@ -37,12 +37,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-// '/': (context) => const EPandaHomepage(), // Homepage - index 0
-// '/route-planning': (context) => const EMapNav(), // Route Planning Page
-// '/profile': (context) => const EProfile(), // Profile Page - index 2
-// '/friends': (context) => const EFriends(), // Friends Page -
-// '/settings': (context) => const ESettings(), // Settings Page -
-// '/challenges': (context) => const EChallenges(), // Challenges Page - index 1
-// '/leaderboards': (context) => const ELeaderboards(), // Leaderboards Page -
-// '/carbon-history': (context) => const ECarbonHistory(), // Carbon Footprint History -
