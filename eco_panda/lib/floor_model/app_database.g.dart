@@ -186,6 +186,18 @@ class _$UserDao extends UserDao {
   final DeletionAdapter<User> _userDeletionAdapter;
 
   @override
+  Future<List<User>> retrieveOnlyUser() async {
+    return _queryAdapter.queryList('SELECT * FROM User',
+        mapper: (Map<String, Object?> row) => User(
+            userId: row['userId'] as int?,
+            cloudUserId: row['cloudUserId'] as int,
+            userName: row['userName'] as String,
+            picPath: row['picPath'] as String,
+            carbonFootprintScore: row['carbonFootprintScore'] as int,
+            ecoScore: row['ecoScore'] as int));
+  }
+
+  @override
   Future<void> updatePicPath(
     int userId,
     String picPath,
