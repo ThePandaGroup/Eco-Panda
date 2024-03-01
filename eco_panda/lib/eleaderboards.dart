@@ -106,6 +106,8 @@ class _ELeaderboardsState extends State<ELeaderboards> {
                 ],
             )
           ),
+          // dont have a current user so it is null object
+          /*
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text('Your Rank', style: Theme.of(context).textTheme.titleLarge),
@@ -114,6 +116,7 @@ class _ELeaderboardsState extends State<ELeaderboards> {
                 title: Text("${currUser!.userName}" ?? "N/A"),
                 trailing: Text("${currUser!.ecoScore} pts"?? '0 pts'),
           )
+    */
         ],
       ),
     );
