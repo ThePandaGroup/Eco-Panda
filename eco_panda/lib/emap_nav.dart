@@ -403,18 +403,19 @@ class _EMapNavState extends State<EMapNav> {
   }
 
   // update db for new routes
+
   Future<void> addDestination(Destination destination) async {
     List<Destination> pastDestination = [];
     final localDb = Provider.of<AppDatabase>(context, listen: false);
+    await localDb.destinationDao.insertDestination(destination);
+
     final records = await localDb.destinationDao.retrievePastDestinations();
 
     setState(() {
       pastDestination = List.from(records.reversed);
     });
 
-    // insert new destination
-
-    if (pastDestination.length >= 5) {
+    if (pastDestination.length > 5) {
       await localDb.destinationDao.deleteDestination(pastDestination.last);
     }
   }
