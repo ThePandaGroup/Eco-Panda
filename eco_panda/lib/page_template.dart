@@ -26,15 +26,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: () async {
                 Navigator.of(context).pop();
                 await FirebaseAuth.instance.signOut();
-                Navigator.of(context).pop();
               },
             ),
           ],
         );
       },
     );
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pop();
   }
 
   @override
@@ -78,6 +75,7 @@ class EPageTemplate extends StatefulWidget {
 class _EPageTemplateState extends State<EPageTemplate> {
   int _selectedIndex = 0;
 
+
   static const List<Widget> _pageWidgets = <Widget>[
     EPandaHomepage(),
     EChallenges(),
@@ -88,6 +86,19 @@ class _EPageTemplateState extends State<EPageTemplate> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    User? user = FirebaseAuth.instance.currentUser;
+    String? uid = user?.uid;
+    if (uid != null) {
+      print("Current user's UID: $uid");
+    } else {
+      print("No user is signed in.");
+    }
+    // sync local db with firestore using the uid
   }
 
   @override
