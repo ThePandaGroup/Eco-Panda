@@ -4,33 +4,65 @@ import 'package:flutter/foundation.dart';
 import 'package:eco_panda/firebase_options.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('DefaultFirebaseOptions', () {
+    setUp(() {
+      // Initialize shared resources or perform common setup actions
+      // For example, initializing Firebase if needed for all tests
+      Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    });
+
+
+    tearDown(() {
+      // Reset the platform override after each test
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+
+    // Test for web platform
     test('returns correct FirebaseOptions for web', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
       if (kIsWeb) {
         expect(DefaultFirebaseOptions.currentPlatform, DefaultFirebaseOptions.web);
       }
     });
 
+    // Test for Android platform
     test('returns correct FirebaseOptions for android', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
       if (defaultTargetPlatform == TargetPlatform.android) {
         expect(DefaultFirebaseOptions.currentPlatform, DefaultFirebaseOptions.android);
       }
     });
 
+    // Test for iOS platform
     test('returns correct FirebaseOptions for iOS', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       if (defaultTargetPlatform == TargetPlatform.iOS) {
         expect(DefaultFirebaseOptions.currentPlatform, DefaultFirebaseOptions.ios);
       }
     });
 
-    test('throws UnsupportedError for unsupported platforms', () {
-      if (defaultTargetPlatform == TargetPlatform.macOS ||
-          defaultTargetPlatform == TargetPlatform.windows ||
-          defaultTargetPlatform == TargetPlatform.linux) {
-        expect(() => DefaultFirebaseOptions.currentPlatform, throwsUnsupportedError);
-      }
+    // Test for macOS platform
+    test('simulate macOS platform', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      expect(() => DefaultFirebaseOptions.currentPlatform, throwsUnsupportedError);
     });
 
+    // Test for Windows platform
+    test('simulate Windows platform', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      expect(() => DefaultFirebaseOptions.currentPlatform, throwsUnsupportedError);
+    });
+
+    // Test for Linux platform
+    test('simulate Linux platform', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      expect(() => DefaultFirebaseOptions.currentPlatform, throwsUnsupportedError);
+    });
+
+    // Tests to verify the correctness of FirebaseOptions for each platform
     test('web FirebaseOptions has correct values', () {
       FirebaseOptions options = DefaultFirebaseOptions.web;
       expect(options.apiKey, 'AIzaSyA9vACPwB1T18v9fPn0U8KHiDKmnR8PGHs');
