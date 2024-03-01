@@ -27,6 +27,7 @@ class Challenge{
   @PrimaryKey(autoGenerate: true)
   final int? challengeId;
 
+  final String title;
   final String challengeDescription;
   final int ecoReward;
   final int progress;
@@ -34,6 +35,7 @@ class Challenge{
 
   Challenge({
     this.challengeId,
+    required this.title,
     required this.challengeDescription,
     required this.ecoReward,
     required this.progress,

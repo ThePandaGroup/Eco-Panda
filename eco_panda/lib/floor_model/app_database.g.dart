@@ -97,7 +97,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `User` (`userId` INTEGER PRIMARY KEY AUTOINCREMENT, `cloudUserId` INTEGER NOT NULL, `userName` TEXT NOT NULL, `picPath` TEXT NOT NULL, `carbonFootprintScore` INTEGER NOT NULL, `ecoScore` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `History` (`historyId` INTEGER PRIMARY KEY AUTOINCREMENT, `yearMonth` TEXT NOT NULL, `historyCarbonFootprint` INTEGER NOT NULL, `userId` INTEGER NOT NULL)');
         await database.execute(
@@ -270,6 +270,7 @@ class _$ChallengeDao extends ChallengeDao {
             'Challenge',
             (Challenge item) => <String, Object?>{
                   'challengeId': item.challengeId,
+                  'title': item.title,
                   'challengeDescription': item.challengeDescription,
                   'ecoReward': item.ecoReward,
                   'progress': item.progress,
@@ -281,6 +282,7 @@ class _$ChallengeDao extends ChallengeDao {
             ['challengeId'],
             (Challenge item) => <String, Object?>{
                   'challengeId': item.challengeId,
+                  'title': item.title,
                   'challengeDescription': item.challengeDescription,
                   'ecoReward': item.ecoReward,
                   'progress': item.progress,
@@ -302,6 +304,7 @@ class _$ChallengeDao extends ChallengeDao {
     return _queryAdapter.queryList('SELECT * FROM Challenge',
         mapper: (Map<String, Object?> row) => Challenge(
             challengeId: row['challengeId'] as int?,
+            title: row['title'] as String,
             challengeDescription: row['challengeDescription'] as String,
             ecoReward: row['ecoReward'] as int,
             progress: row['progress'] as int,
@@ -313,6 +316,7 @@ class _$ChallengeDao extends ChallengeDao {
     return _queryAdapter.query('SELECT * FROM Challenge WHERE challengeId = ?1',
         mapper: (Map<String, Object?> row) => Challenge(
             challengeId: row['challengeId'] as int?,
+            title: row['title'] as String,
             challengeDescription: row['challengeDescription'] as String,
             ecoReward: row['ecoReward'] as int,
             progress: row['progress'] as int,
@@ -325,6 +329,7 @@ class _$ChallengeDao extends ChallengeDao {
     return _queryAdapter.queryList('SELECT * FROM Challenge WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => Challenge(
             challengeId: row['challengeId'] as int?,
+            title: row['title'] as String,
             challengeDescription: row['challengeDescription'] as String,
             ecoReward: row['ecoReward'] as int,
             progress: row['progress'] as int,
@@ -415,9 +420,8 @@ class _$HistoryDao extends HistoryDao {
   }
 
   @override
-  Future<List<History>> retrieveLast12Histories() async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM History ORDER BY historyId DESC LIMIT 12',
+  Future<List<History>> retrieveHistories() async {
+    return _queryAdapter.queryList('SELECT * FROM History',
         mapper: (Map<String, Object?> row) => History(
             historyId: row['historyId'] as int?,
             yearMonth: row['yearMonth'] as String,

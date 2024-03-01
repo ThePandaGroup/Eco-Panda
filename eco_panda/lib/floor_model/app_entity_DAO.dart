@@ -76,9 +76,9 @@ abstract class HistoryDao {
   @Query('UPDATE History SET historyCarbonFootprint = :carbonFootprint WHERE yearMonth = :yearMonth AND userId = :userId')
   Future<void> updateHistoryCarbonFootprint(String yearMonth, int userId, int carbonFootprint);
 
-  // Retrieve the last 12 history records in descending order of historyId
-  @Query('SELECT * FROM History ORDER BY historyId DESC LIMIT 12')
-  Future<List<History>> retrieveLast12Histories();
+  // Retrieve all history records
+  @Query('SELECT * FROM History')
+  Future<List<History>> retrieveHistories();
 }
 
 @dao
