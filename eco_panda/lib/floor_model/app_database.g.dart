@@ -103,7 +103,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Leaderboard` (`leaderboardId` INTEGER PRIMARY KEY AUTOINCREMENT, `rankScore` INTEGER NOT NULL, `rankerName` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Destination` (`destinationId` INTEGER PRIMARY KEY AUTOINCREMENT, `address` TEXT NOT NULL, `lastitude` REAL NOT NULL, `longitude` REAL NOT NULL, `carbonFootprintScore` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Destination` (`destinationId` INTEGER PRIMARY KEY AUTOINCREMENT, `address` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `carbonFootprintScore` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Setting` (`settingType` TEXT NOT NULL, `on` INTEGER NOT NULL, PRIMARY KEY (`settingType`))');
 
@@ -495,7 +495,7 @@ class _$DestinationDao extends DestinationDao {
             (Destination item) => <String, Object?>{
                   'destinationId': item.destinationId,
                   'address': item.address,
-                  'lastitude': item.lastitude,
+                  'latitude': item.latitude,
                   'longitude': item.longitude,
                   'carbonFootprintScore': item.carbonFootprintScore
                 }),
@@ -506,7 +506,7 @@ class _$DestinationDao extends DestinationDao {
             (Destination item) => <String, Object?>{
                   'destinationId': item.destinationId,
                   'address': item.address,
-                  'lastitude': item.lastitude,
+                  'latitude': item.latitude,
                   'longitude': item.longitude,
                   'carbonFootprintScore': item.carbonFootprintScore
                 });
@@ -522,12 +522,12 @@ class _$DestinationDao extends DestinationDao {
   final DeletionAdapter<Destination> _destinationDeletionAdapter;
 
   @override
-  Future<List<Destination>> retrieveDestinationsDescending() async {
+  Future<List<Destination>> retrievePastDestinations() async {
     return _queryAdapter.queryList('SELECT * FROM Destination',
         mapper: (Map<String, Object?> row) => Destination(
             destinationId: row['destinationId'] as int?,
             address: row['address'] as String,
-            lastitude: row['lastitude'] as double,
+            latitude: row['latitude'] as double,
             longitude: row['longitude'] as double,
             carbonFootprintScore: row['carbonFootprintScore'] as int));
   }

@@ -1,5 +1,4 @@
 import 'package:floor/floor.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 @Entity(tableName: "User")
 class User{
@@ -81,7 +80,7 @@ class Destination{
   final int? destinationId;
 
   final String address;
-  final double lastitude;
+  final double latitude;
   final double longitude;
   final int carbonFootprintScore;
 
@@ -89,7 +88,7 @@ class Destination{
   Destination({
     this.destinationId,
     required this.address,
-    required this.lastitude,
+    required this.latitude,
     required this.longitude,
     required this. carbonFootprintScore
   });

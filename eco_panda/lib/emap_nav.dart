@@ -1,14 +1,17 @@
 import 'dart:async';
-
 import 'package:eco_panda/ehomepage.dart';
+import 'package:eco_panda/floor_model/app_database.dart';
+import 'package:eco_panda/floor_model/app_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import './page_template.dart';
+
 
 class EMapNav extends StatefulWidget {
   final TransportMode? selectedMode;
@@ -337,8 +340,15 @@ class _EMapNavState extends State<EMapNav> {
     );
   }
 
-  void finishingRoute() {
+  void finishingRoute() async {
     _positionStreamSubscription?.cancel();
+    Destination newDestination = Destination(address: await getPlaceName(), latitude: _destination!.latitude, longitude: _destination!.longitude, carbonFootprintScore: earnedCarbonPts);
+
+    resetState();
+    await addDestination(newDestination);
+  }
+
+  void resetState() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -372,6 +382,41 @@ class _EMapNavState extends State<EMapNav> {
         );
       },
     );
+  }
+
+  Future<String> getPlaceName() async {
+    final String url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=${_destination!.latitude},${_destination!.longitude}&key=$mapsApiKey';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        final placeName = jsonResponse['results'][0]['formatted_address'];
+        return placeName;
+      } else {
+        print('Failed to retrieve place name: ${response.body}');
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+    }
+    return 'unknown';
+  }
+
+  // update db for new routes
+  Future<void> addDestination(Destination destination) async {
+    List<Destination> pastDestination = [];
+    final localDb = Provider.of<AppDatabase>(context, listen: false);
+    final records = await localDb.destinationDao.retrievePastDestinations();
+
+    setState(() {
+      pastDestination = List.from(records.reversed);
+    });
+
+    // insert new destination
+
+    if (pastDestination.length >= 5) {
+      await localDb.destinationDao.deleteDestination(pastDestination.last);
+    }
   }
 
   @override

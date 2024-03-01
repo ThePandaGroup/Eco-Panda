@@ -106,7 +106,7 @@ abstract class DestinationDao {
 
   // Retrieve all records
   @Query('SELECT * FROM Destination')
-  Future<List<Destination>> retrieveDestinationsDescending();
+  Future<List<Destination>> retrievePastDestinations();
 
   // Delete a destination
   @delete
