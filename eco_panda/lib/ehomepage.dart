@@ -163,7 +163,7 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const ELeaderboards()),
+                                MaterialPageRoute(builder: (context) => ELeaderboards(leaderboardService: FirebaseLeaderboardService(),)),
                               );
                             },
                             child: const Row(
