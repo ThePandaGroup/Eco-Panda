@@ -3,34 +3,21 @@ import 'package:eco_panda/page_template.dart';
 import 'package:flutter/material.dart';
 
 class ELeaderboards extends StatefulWidget {
-  const ELeaderboards({Key? key}) : super(key: key);
+  final LeaderboardService leaderboardService;
+
+  const ELeaderboards({Key? key, required this.leaderboardService}) : super(key: key);
 
   @override
   State<ELeaderboards> createState() => _ELeaderboardsState();
 }
 
 class _ELeaderboardsState extends State<ELeaderboards> {
-  // Future<List<Map<String, dynamic>>> getGlobalLeaderboard() async {
-  //   return List.generate(10, (index) => {"name": "User ${index + 1}", "points": 100 - index});
-  // }
-
   Future<List<Map<String, dynamic>>> getGlobalLeaderboard() async {
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .orderBy('ecoScore', descending: true)
-        .limit(10)
-        .get();
-    return snapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      return {
-        'name': data['username'] ?? 'N/A',
-        'points': data['ecoScore'] ?? 0,
-      };
-    }).toList();
+    return widget.leaderboardService.getGlobalLeaderboard();
   }
 
   Future<Map<String, dynamic>> getUserRank() async {
-    return {"name": "You", "points": 50};
+    return widget.leaderboardService.getUserRank();
   }
 
   @override
@@ -105,5 +92,45 @@ class _ELeaderboardsState extends State<ELeaderboards> {
         ],
       ),
     );
+  }
+}
+
+abstract class LeaderboardService {
+  Future<List<Map<String, dynamic>>> getGlobalLeaderboard();
+  Future<Map<String, dynamic>> getUserRank();
+}
+
+class FirebaseLeaderboardService implements LeaderboardService {
+  @override
+  Future<List<Map<String, dynamic>>> getGlobalLeaderboard() async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .orderBy('ecoScore', descending: true)
+        .limit(10)
+        .get();
+    return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+  }
+
+  @override
+  Future<Map<String, dynamic>> getUserRank() async {
+    return {"name": "You", "points": 50};
+  }
+}
+
+// mock data for testing
+class MockLeaderboardService implements LeaderboardService {
+  @override
+  Future<List<Map<String, dynamic>>> getGlobalLeaderboard() async {
+    // Simulate a network response with mock data
+    return List.generate(10, (index) => {
+      "name": "Mock User ${index + 1}",
+      "points": 100 - index * 10,
+    });
+  }
+
+  @override
+  Future<Map<String, dynamic>> getUserRank() async {
+    // Simulate a user rank with mock data
+    return {"name": "You", "points": 0};
   }
 }
