@@ -6,28 +6,28 @@ abstract class PersonDao {
   @insert
   Future<void> insertUser(Person user);
 
-  @Query("SELECT * FROM User")
+  @Query("SELECT * FROM Person")
   Future<List<Person>> retrieveOnlyUser();
 
-  @Query('SELECT * FROM User WHERE userId = :uid')
+  @Query('SELECT * FROM Person WHERE userId = :uid')
   Future<Person?> findUserByUid(String uid);
 
-  @Query("UPDATE User SET picPath = :picPath WHERE userId = :userId")
+  @Query("UPDATE Person SET picPath = :picPath WHERE userId = :userId")
   Future<void> updatePicPath(String userId, String picPath);
 
-  @Query("UPDATE User SET ecoScore = :ecoScore WHERE userId = :userId")
+  @Query("UPDATE Person SET ecoScore = :ecoScore WHERE userId = :userId")
   Future<void> updateEcoScore(String userId, int ecoScore);
 
-  @Query("UPDATE User SET carbonFootprintScore = :carbonFt WHERE userId = :userId")
+  @Query("UPDATE Person SET carbonFootprintScore = :carbonFt WHERE userId = :userId")
   Future<void> updateCarbonFootprintScore(String userId, int carbonFt);
 
-  @Query('SELECT picPath FROM User WHERE userId = :userId')
+  @Query('SELECT picPath FROM Person WHERE userId = :userId')
   Future<String?> retrievePicPath(String userId);
 
-  @Query('SELECT ecoScore FROM User WHERE userId = :userId')
+  @Query('SELECT ecoScore FROM Person WHERE userId = :userId')
   Future<int?> retrieveEcoScore(String userId);
 
-  @Query('SELECT carbonFootprintScore FROM User WHERE userId = :userId')
+  @Query('SELECT carbonFootprintScore FROM Person WHERE userId = :userId')
   Future<int?> retrieveCarbonFootprintScore(int userId);
 
   @delete

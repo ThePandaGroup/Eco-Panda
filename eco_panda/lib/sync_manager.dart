@@ -20,35 +20,63 @@ class SyncManager {
   }
 
   Future<void> syncUsers() async {
-    final user = await localDatabase.personDao.findUserByUid(FirebaseAuth.instance.currentUser!.uid);
+    final user = await localDatabase.personDao.findUserByUid(_auth.currentUser!.uid);
+    int ecoScore = user?.ecoScore ?? 0;
 
     if (user == null) {
       await localDatabase.personDao.insertUser(Person(
-        userId: FirebaseAuth.instance.currentUser!.uid,
+        userId: _auth.currentUser!.uid,
         picPath: 'assets/avatar.png',
         ecoScore: 0,
       ));
     }
 
-    await syncCloudUsers(user?.ecoScore ?? 0);
+    int updatedEcoScore = await syncCloudUsers(ecoScore);
+    if (ecoScore != updatedEcoScore) {
+      localDatabase.personDao.updateEcoScore(FirebaseAuth.instance.currentUser!.uid, updatedEcoScore);
+    }
   }
 
-  Future<void> syncCloudUsers(int ecoScore) async {
+  Future<int> syncCloudUsers(int ecoScore) async {
     HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('syncUserEcoScore');
     try {
       final result = await callable.call(<String, dynamic>{
         'ecoScore': ecoScore,
       });
+      final int updatedEcoScore = result.data['ecoScore'];
       print("Successfully synced ecoScore. Result: ${result.data}");
+      return updatedEcoScore;
     } on FirebaseFunctionsException catch (e) {
       print("Failed to sync ecoScore: ${e.code} - ${e.message}");
     } catch (e) {
       print("An error occurred: $e");
     }
+    return ecoScore;
   }
 
   Future<void> syncChallenges() async {
+    final existingChallenges = await localDatabase.challengeDao.findChallengesByUid(_auth.currentUser!.uid);
+    if (existingChallenges.isNotEmpty) return;
 
+    final challengesSnapshot = await FirebaseFirestore.instance.collection('challenges').get();
+
+    final List<Challenge> challengesToInsert = [];
+    for (final doc in challengesSnapshot.docs) {
+      final data = doc.data();
+      challengesToInsert.add(Challenge(
+        title: data['title'] ?? '',
+        challengeDescription: data['description'] ?? '',
+        ecoReward: data['reward'] ?? 0,
+        requirement: data['required'] ?? 0,
+        progress: 0,
+        cType: data['cType'] ?? '',
+        userId: _auth.currentUser!.uid,
+      ));
+    }
+
+    for (final challenge in challengesToInsert) {
+      await localDatabase.challengeDao.insertChallenge(challenge);
+    }
   }
 
   Future<void> updateUserPts() async {
