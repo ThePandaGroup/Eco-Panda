@@ -3,10 +3,9 @@ import 'package:floor/floor.dart';
 @Entity(tableName: "User")
 class User{
 
-  @PrimaryKey(autoGenerate: true)
+  @primaryKey
   final int? userId;
 
-  final int cloudUserId;
   final String userName;
   final String picPath;
   final int carbonFootprintScore;
@@ -14,7 +13,6 @@ class User{
 
   User({
     this.userId,
-    required this.cloudUserId,
     required this.userName,
     required this.picPath,
     required this.carbonFootprintScore,
