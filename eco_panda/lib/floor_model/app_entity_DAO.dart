@@ -13,19 +13,19 @@ abstract class PersonDao {
   Future<Person?> findUserByUid(String uid);
 
   @Query("UPDATE User SET picPath = :picPath WHERE userId = :userId")
-  Future<void> updatePicPath(int userId, String picPath);
+  Future<void> updatePicPath(String userId, String picPath);
 
   @Query("UPDATE User SET ecoScore = :ecoScore WHERE userId = :userId")
-  Future<void> updateEcoScore(int userId, int ecoScore);
+  Future<void> updateEcoScore(String userId, int ecoScore);
 
   @Query("UPDATE User SET carbonFootprintScore = :carbonFt WHERE userId = :userId")
-  Future<void> updateCarbonFootprintScore(int userId, int carbonFt);
+  Future<void> updateCarbonFootprintScore(String userId, int carbonFt);
 
   @Query('SELECT picPath FROM User WHERE userId = :userId')
-  Future<String?> retrievePicPath(int userId);
+  Future<String?> retrievePicPath(String userId);
 
   @Query('SELECT ecoScore FROM User WHERE userId = :userId')
-  Future<int?> retrieveEcoScore(int userId);
+  Future<int?> retrieveEcoScore(String userId);
 
   @Query('SELECT carbonFootprintScore FROM User WHERE userId = :userId')
   Future<int?> retrieveCarbonFootprintScore(int userId);

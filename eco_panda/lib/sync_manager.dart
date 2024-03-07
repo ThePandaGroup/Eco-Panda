@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:eco_panda/floor_model/app_entity_DAO.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'floor_model/app_database.dart';
 import 'floor_model/app_entity.dart';
@@ -16,15 +15,22 @@ class SyncManager {
     final user = _auth.currentUser;
     if (user != null) {
       await syncUsers();
+      await syncChallenges();
     }
-    await syncChallenges();
-    await syncHistory();
-    await syncLeaderboard();
-    await syncSettings();
   }
 
   Future<void> syncUsers() async {
+    final user = await localDatabase.personDao.findUserByUid(FirebaseAuth.instance.currentUser!.uid);
 
+    if (user == null) {
+      await localDatabase.personDao.insertUser(Person(
+        userId: FirebaseAuth.instance.currentUser!.uid,
+        picPath: 'assets/avatar.png',
+        ecoScore: 0,
+      ));
+    }
+
+    await syncCloudUsers(user?.ecoScore ?? 0);
   }
 
   Future<void> syncCloudUsers(int ecoScore) async {
@@ -41,24 +47,12 @@ class SyncManager {
     }
   }
 
-  Future<void> updateUserPts() async {
-    // Implement your comparison and updating logic here
-    // For example, comparing ecoScores and updating accordingly
-  }
-
   Future<void> syncChallenges() async {
 
   }
 
-  Future<void> syncHistory() async {
-
-  }
-
-  Future<void> syncLeaderboard() async {
-
-  }
-
-  Future<void> syncSettings() async {
-
+  Future<void> updateUserPts() async {
+    // Implement your comparison and updating logic here
+    // For example, comparing ecoScores and updating accordingly
   }
 }

@@ -200,7 +200,7 @@ class _$PersonDao extends PersonDao {
 
   @override
   Future<void> updatePicPath(
-    int userId,
+    String userId,
     String picPath,
   ) async {
     await _queryAdapter.queryNoReturn(
@@ -210,7 +210,7 @@ class _$PersonDao extends PersonDao {
 
   @override
   Future<void> updateEcoScore(
-    int userId,
+    String userId,
     int ecoScore,
   ) async {
     await _queryAdapter.queryNoReturn(
@@ -220,7 +220,7 @@ class _$PersonDao extends PersonDao {
 
   @override
   Future<void> updateCarbonFootprintScore(
-    int userId,
+    String userId,
     int carbonFt,
   ) async {
     await _queryAdapter.queryNoReturn(
@@ -229,14 +229,14 @@ class _$PersonDao extends PersonDao {
   }
 
   @override
-  Future<String?> retrievePicPath(int userId) async {
+  Future<String?> retrievePicPath(String userId) async {
     return _queryAdapter.query('SELECT picPath FROM User WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => row.values.first as String,
         arguments: [userId]);
   }
 
   @override
-  Future<int?> retrieveEcoScore(int userId) async {
+  Future<int?> retrieveEcoScore(String userId) async {
     return _queryAdapter.query('SELECT ecoScore FROM User WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => row.values.first as int,
         arguments: [userId]);
