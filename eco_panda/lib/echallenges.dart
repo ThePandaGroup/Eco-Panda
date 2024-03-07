@@ -112,7 +112,6 @@ class ChallengeCard extends StatelessWidget {
           ),
           trailing: ChallengeProgressIndicator(
             currentProgress: currentProgress,
-            totalRequired: totalRequired,
           ),
         ),
       ),
@@ -123,13 +122,11 @@ class ChallengeCard extends StatelessWidget {
 
 // Challenge progress indicator
 class ChallengeProgressIndicator extends StatelessWidget {
-  final int currentProgress;
-  final int totalRequired;
+  final String currentProgress;
 
   const ChallengeProgressIndicator({
     super.key,
-    required this.currentProgress,
-    required this.totalRequired,
+    required this.currentProgress
   });
 
   @override
@@ -141,7 +138,7 @@ class ChallengeProgressIndicator extends StatelessWidget {
         borderRadius: BorderRadius.circular(4.0),
       ),
       child: Text(
-        '$currentProgress/$totalRequired',
+        "$currentProgress",
         style: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
