@@ -6,7 +6,7 @@ class User{
   @PrimaryKey(autoGenerate: true)
   final int? userId;
 
-  final int cloudUserId;
+  final String uid;
   final String userName;
   final String picPath;
   final int carbonFootprintScore;
@@ -14,7 +14,7 @@ class User{
 
   User({
     this.userId,
-    required this.cloudUserId,
+    required this.uid,
     required this.userName,
     required this.picPath,
     required this.carbonFootprintScore,

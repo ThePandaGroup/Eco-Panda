@@ -1,8 +1,11 @@
+import 'package:eco_panda/sync_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import './ehomepage.dart';
 import './eprofile.dart';
 import './echallenges.dart';
+import 'floor_model/app_database.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   CustomAppBar({Key? key}) : preferredSize = Size.fromHeight(kToolbarHeight), super(key: key);
@@ -74,7 +77,7 @@ class EPageTemplate extends StatefulWidget {
 
 class _EPageTemplateState extends State<EPageTemplate> {
   int _selectedIndex = 0;
-
+  String uid = FirebaseAuth.instance.currentUser?.uid ?? "null";
 
   static const List<Widget> _pageWidgets = <Widget>[
     EPandaHomepage(),
@@ -91,18 +94,14 @@ class _EPageTemplateState extends State<EPageTemplate> {
   @override
   void initState() {
     super.initState();
-    User? user = FirebaseAuth.instance.currentUser;
-    String? uid = user?.uid;
-    if (uid != null) {
-      print("Current user's UID: $uid");
-    } else {
-      print("No user is signed in.");
-    }
-    // sync local db with firestore using the uid
   }
 
   @override
   Widget build(BuildContext context) {
+    final localDb = Provider.of<AppDatabase>(context, listen: false);
+    final manager = SyncManager(uid, localDb);
+    manager.syncAll();
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
