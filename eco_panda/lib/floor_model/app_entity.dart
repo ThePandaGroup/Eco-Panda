@@ -1,7 +1,7 @@
 import 'package:floor/floor.dart';
 
-@Entity(tableName: "User")
-class User{
+@Entity(tableName: "Person")
+class Person{
 
   @primaryKey
   final int? userId;
@@ -9,7 +9,7 @@ class User{
   final String picPath;
   final int ecoScore;
 
-  User({
+  Person({
     this.userId,
     required this.picPath,
     required this.ecoScore

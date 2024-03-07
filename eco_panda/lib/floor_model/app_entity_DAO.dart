@@ -2,15 +2,15 @@ import 'package:floor/floor.dart';
 import 'app_entity.dart';
 
 @dao
-abstract class UserDao {
+abstract class PersonDao {
   @insert
-  Future<void> insertUser(User user);
+  Future<void> insertUser(Person user);
 
   @Query("SELECT * FROM User")
-  Future<List<User>> retrieveOnlyUser();
+  Future<List<Person>> retrieveOnlyUser();
 
   @Query('SELECT * FROM User WHERE userId = :uid')
-  Future<User?> findUserByUid(String uid);
+  Future<Person?> findUserByUid(String uid);
 
   @Query("UPDATE User SET picPath = :picPath WHERE userId = :userId")
   Future<void> updatePicPath(int userId, String picPath);
@@ -31,7 +31,7 @@ abstract class UserDao {
   Future<int?> retrieveCarbonFootprintScore(int userId);
 
   @delete
-  Future<int?>removeUser(User user);
+  Future<int?>removeUser(Person user);
 
 }
 

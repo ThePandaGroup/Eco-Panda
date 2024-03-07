@@ -7,9 +7,9 @@ import 'app_entity_DAO.dart';
 
 part 'app_database.g.dart';
 
-@Database(version: 1, entities: [User, Challenge, History, Leaderboard, Destination, Setting])
+@Database(version: 1, entities: [Person, Challenge, History, Leaderboard, Destination, Setting])
 abstract class AppDatabase extends FloorDatabase {
-  UserDao get userDao;
+  PersonDao get personDao;
   ChallengeDao get challengeDao;
   HistoryDao get historyDao;
   LeaderboardDao get leaderboardDao;

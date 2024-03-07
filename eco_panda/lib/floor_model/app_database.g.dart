@@ -61,7 +61,7 @@ class _$AppDatabase extends AppDatabase {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
-  UserDao? _userDaoInstance;
+  PersonDao? _personDaoInstance;
 
   ChallengeDao? _challengeDaoInstance;
 
@@ -95,7 +95,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`userId` INTEGER, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, PRIMARY KEY (`userId`))');
+            'CREATE TABLE IF NOT EXISTS `Person` (`userId` INTEGER, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, PRIMARY KEY (`userId`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `requirement` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` INTEGER NOT NULL, `cType` TEXT NOT NULL)');
         await database.execute(
@@ -114,8 +114,8 @@ class _$AppDatabase extends AppDatabase {
   }
 
   @override
-  UserDao get userDao {
-    return _userDaoInstance ??= _$UserDao(database, changeListener);
+  PersonDao get personDao {
+    return _personDaoInstance ??= _$PersonDao(database, changeListener);
   }
 
   @override
@@ -146,24 +146,24 @@ class _$AppDatabase extends AppDatabase {
   }
 }
 
-class _$UserDao extends UserDao {
-  _$UserDao(
+class _$PersonDao extends PersonDao {
+  _$PersonDao(
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
-        _userInsertionAdapter = InsertionAdapter(
+        _personInsertionAdapter = InsertionAdapter(
             database,
-            'User',
-            (User item) => <String, Object?>{
+            'Person',
+            (Person item) => <String, Object?>{
                   'userId': item.userId,
                   'picPath': item.picPath,
                   'ecoScore': item.ecoScore
                 }),
-        _userDeletionAdapter = DeletionAdapter(
+        _personDeletionAdapter = DeletionAdapter(
             database,
-            'User',
+            'Person',
             ['userId'],
-            (User item) => <String, Object?>{
+            (Person item) => <String, Object?>{
                   'userId': item.userId,
                   'picPath': item.picPath,
                   'ecoScore': item.ecoScore
@@ -175,23 +175,23 @@ class _$UserDao extends UserDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<User> _userInsertionAdapter;
+  final InsertionAdapter<Person> _personInsertionAdapter;
 
-  final DeletionAdapter<User> _userDeletionAdapter;
+  final DeletionAdapter<Person> _personDeletionAdapter;
 
   @override
-  Future<List<User>> retrieveOnlyUser() async {
+  Future<List<Person>> retrieveOnlyUser() async {
     return _queryAdapter.queryList('SELECT * FROM User',
-        mapper: (Map<String, Object?> row) => User(
+        mapper: (Map<String, Object?> row) => Person(
             userId: row['userId'] as int?,
             picPath: row['picPath'] as String,
             ecoScore: row['ecoScore'] as int));
   }
 
   @override
-  Future<User?> findUserByUid(String uid) async {
+  Future<Person?> findUserByUid(String uid) async {
     return _queryAdapter.query('SELECT * FROM User WHERE userId = ?1',
-        mapper: (Map<String, Object?> row) => User(
+        mapper: (Map<String, Object?> row) => Person(
             userId: row['userId'] as int?,
             picPath: row['picPath'] as String,
             ecoScore: row['ecoScore'] as int),
@@ -251,13 +251,13 @@ class _$UserDao extends UserDao {
   }
 
   @override
-  Future<void> insertUser(User user) async {
-    await _userInsertionAdapter.insert(user, OnConflictStrategy.abort);
+  Future<void> insertUser(Person user) async {
+    await _personInsertionAdapter.insert(user, OnConflictStrategy.abort);
   }
 
   @override
-  Future<int> removeUser(User user) {
-    return _userDeletionAdapter.deleteAndReturnChangedRows(user);
+  Future<int> removeUser(Person user) {
+    return _personDeletionAdapter.deleteAndReturnChangedRows(user);
   }
 }
 
