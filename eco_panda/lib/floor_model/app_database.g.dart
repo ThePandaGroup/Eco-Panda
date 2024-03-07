@@ -95,7 +95,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Person` (`userId` INTEGER, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, PRIMARY KEY (`userId`))');
+            'CREATE TABLE IF NOT EXISTS `Person` (`userId` TEXT, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, PRIMARY KEY (`userId`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `requirement` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` INTEGER NOT NULL, `cType` TEXT NOT NULL)');
         await database.execute(
@@ -183,7 +183,7 @@ class _$PersonDao extends PersonDao {
   Future<List<Person>> retrieveOnlyUser() async {
     return _queryAdapter.queryList('SELECT * FROM User',
         mapper: (Map<String, Object?> row) => Person(
-            userId: row['userId'] as int?,
+            userId: row['userId'] as String?,
             picPath: row['picPath'] as String,
             ecoScore: row['ecoScore'] as int));
   }
@@ -192,7 +192,7 @@ class _$PersonDao extends PersonDao {
   Future<Person?> findUserByUid(String uid) async {
     return _queryAdapter.query('SELECT * FROM User WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => Person(
-            userId: row['userId'] as int?,
+            userId: row['userId'] as String?,
             picPath: row['picPath'] as String,
             ecoScore: row['ecoScore'] as int),
         arguments: [uid]);

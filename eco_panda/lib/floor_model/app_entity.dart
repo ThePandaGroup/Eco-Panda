@@ -4,7 +4,7 @@ import 'package:floor/floor.dart';
 class Person{
 
   @primaryKey
-  final int? userId;
+  final String? userId;
 
   final String picPath;
   final int ecoScore;
