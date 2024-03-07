@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import './floor_model/app_entity.dart';
 import './floor_model/app_database.dart';
 
@@ -11,24 +13,58 @@ class EChallenges extends StatefulWidget {
 
 // Change things in here for the page
 class _EChallengesState extends State<EChallenges> {
+  List<Challenge> challengeList = [];
+  @override
+  void initState() {
+    super.initState();
+    _retrieveAllChallenge();
+  }
+  void _retrieveAllChallenge() async{
+    final database = Provider.of<AppDatabase>(context, listen: false);
+    final currChallengeList = await database.challengeDao.retrieveAllChallenges();
+    setState(() {
+      challengeList = currChallengeList;
+    });
+  }
 
-  // Future<void> retrieveChallenges() async {
-  //
-  // }
+  Future<String> _retrieveProgress(Challenge challenge) async{
+    final database = Provider.of<AppDatabase>(context, listen: false);
+    String co = "CO";
+    String ecoS = "ecopts";
+    String userID = FirebaseAuth.instance.currentUser!.uid;
+    String result = "NONE";
+    if(challenge.cType == co){
+      final progress = await database.personDao.retrieveEcoScore(userID);
+      var calculation = progress!/challenge.requirement;
+      result = "${calculation.toInt()}%";
+      return result;
+    }else if (challenge.cType == ecoS){
+      final progress = await database.historyDao.sumHistoryCarbonFootprint();
+      var calculation = progress!/challenge.requirement;
+      result = "${calculation.toInt()}%";
+      return result;
+    }else{
+      return result;
+    }
 
-  static const String cTitle = 'Daily Challenge';
-  static const String cDescrpt = 'First Eco route of the day';
-  static const int cProgress = 0; //fetch from data base, placeholder value for now
-  static const int cRequired = 1;
-
-
+      
+  }
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-        child:Column(
-            children: [
-              ChallengeCard(title: cTitle, description: cDescrpt, currentProgress: cProgress, totalRequired: cRequired)
-            ]
+    return Expanded(
+        child:SingleChildScrollView(
+          child: Column(
+            children: challengeList.asMap().entries.map((mapEntry) {
+              int index = mapEntry.key;
+              Challenge entry = mapEntry.value;
+              return
+                ChallengeCard(
+                    title: entry.title,
+                    description: entry.challengeDescription,
+                    currentProgress: _retrieveProgress(entry).toString(),
+                    totalRequired: entry.requirement);
+            }).toList(),
+          ),
         )
     );
   }
@@ -38,7 +74,7 @@ class _EChallengesState extends State<EChallenges> {
 class ChallengeCard extends StatelessWidget {
   final String title ;
   final String description ;
-  final int currentProgress;
+  final String currentProgress;
   final int totalRequired;
 
   const ChallengeCard({
