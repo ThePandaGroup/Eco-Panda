@@ -26,6 +26,7 @@ class Challenge{
   final String title;
   final String challengeDescription;
   final int ecoReward;
+  final int requirement;
   final int progress;
   final int userId;
   final String cType;
@@ -35,6 +36,7 @@ class Challenge{
     required this.title,
     required this.challengeDescription,
     required this.ecoReward,
+    required this.requirement,
     required this.progress,
     required this.cType,
     required this.userId
