@@ -2,16 +2,33 @@ import 'package:eco_panda/page_template.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'sync_manager.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
+
+  Future<void> _syncUserData(BuildContext context) async {
+    final syncManager = Provider.of<SyncManager>(context, listen: false);
+    await syncManager.syncAll();
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (snapshot.hasData) {
+          return FutureBuilder(
+            future: _syncUserData(context),
+            builder: (context, asyncSnapshot) {
+              if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              return const EPageTemplate();
+            },
+          );
+        } else {
           return SignInScreen(
             providers: [
               EmailAuthProvider(),
@@ -44,8 +61,6 @@ class AuthGate extends StatelessWidget {
             },
           );
         }
-
-        return const EPageTemplate();
       },
     );
   }

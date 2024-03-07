@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'auth_gate.dart';
+import 'sync_manager.dart';
 
 
 void main() async{
@@ -13,10 +14,14 @@ void main() async{
   );
 
   final AppDatabase localDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  final syncManager = SyncManager(localDb);
 
   runApp(
-    Provider<AppDatabase>(
-      create: (_) => localDb,
+    MultiProvider(
+      providers: [
+        Provider<AppDatabase>(create: (_) => localDb),
+        Provider<SyncManager>(create: (_) => syncManager),
+      ],
       child: const MyApp(),
     ),
   );

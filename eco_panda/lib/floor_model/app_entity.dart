@@ -8,14 +8,12 @@ class User{
 
   final String userName;
   final String picPath;
-  final int carbonFootprintScore;
   final int ecoScore;
 
   User({
     this.userId,
     required this.userName,
     required this.picPath,
-    required this.carbonFootprintScore,
     required this.ecoScore
   });
 }

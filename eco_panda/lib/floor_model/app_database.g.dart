@@ -95,7 +95,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`userId` INTEGER, `userName` TEXT NOT NULL, `picPath` TEXT NOT NULL, `carbonFootprintScore` INTEGER NOT NULL, `ecoScore` INTEGER NOT NULL, PRIMARY KEY (`userId`))');
+            'CREATE TABLE IF NOT EXISTS `User` (`userId` INTEGER, `userName` TEXT NOT NULL, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, PRIMARY KEY (`userId`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` INTEGER NOT NULL, `cType` TEXT NOT NULL)');
         await database.execute(
@@ -158,7 +158,6 @@ class _$UserDao extends UserDao {
                   'userId': item.userId,
                   'userName': item.userName,
                   'picPath': item.picPath,
-                  'carbonFootprintScore': item.carbonFootprintScore,
                   'ecoScore': item.ecoScore
                 }),
         _userDeletionAdapter = DeletionAdapter(
@@ -169,7 +168,6 @@ class _$UserDao extends UserDao {
                   'userId': item.userId,
                   'userName': item.userName,
                   'picPath': item.picPath,
-                  'carbonFootprintScore': item.carbonFootprintScore,
                   'ecoScore': item.ecoScore
                 });
 
@@ -190,7 +188,6 @@ class _$UserDao extends UserDao {
             userId: row['userId'] as int?,
             userName: row['userName'] as String,
             picPath: row['picPath'] as String,
-            carbonFootprintScore: row['carbonFootprintScore'] as int,
             ecoScore: row['ecoScore'] as int));
   }
 
@@ -201,7 +198,6 @@ class _$UserDao extends UserDao {
             userId: row['userId'] as int?,
             userName: row['userName'] as String,
             picPath: row['picPath'] as String,
-            carbonFootprintScore: row['carbonFootprintScore'] as int,
             ecoScore: row['ecoScore'] as int),
         arguments: [uid]);
   }

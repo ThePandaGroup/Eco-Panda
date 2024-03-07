@@ -99,7 +99,7 @@ class _EPageTemplateState extends State<EPageTemplate> {
   @override
   Widget build(BuildContext context) {
     final localDb = Provider.of<AppDatabase>(context, listen: false);
-    final manager = SyncManager(uid, localDb);
+    final manager = SyncManager(localDb);
     manager.syncAll();
 
     return GestureDetector(
