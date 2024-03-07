@@ -9,7 +9,7 @@ abstract class UserDao {
   @Query("SELECT * FROM User")
   Future<List<User>> retrieveOnlyUser();
 
-  @Query('SELECT * FROM User WHERE uid = :uid')
+  @Query('SELECT * FROM User WHERE userId = :uid')
   Future<User?> findUserByUid(String uid);
 
   @Query("UPDATE User SET picPath = :picPath WHERE userId = :userId")

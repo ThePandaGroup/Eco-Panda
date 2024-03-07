@@ -193,7 +193,7 @@ class _$UserDao extends UserDao {
 
   @override
   Future<User?> findUserByUid(String uid) async {
-    return _queryAdapter.query('SELECT * FROM User WHERE uid = ?1',
+    return _queryAdapter.query('SELECT * FROM User WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => User(
             userId: row['userId'] as int?,
             userName: row['userName'] as String,
