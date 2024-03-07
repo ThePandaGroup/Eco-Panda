@@ -199,7 +199,6 @@ class _$UserDao extends UserDao {
     return _queryAdapter.query('SELECT * FROM User WHERE uid = ?1',
         mapper: (Map<String, Object?> row) => User(
             userId: row['userId'] as int?,
-            uid: row['uid'] as String,
             userName: row['userName'] as String,
             picPath: row['picPath'] as String,
             carbonFootprintScore: row['carbonFootprintScore'] as int,

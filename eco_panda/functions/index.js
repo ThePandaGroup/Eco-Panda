@@ -1,19 +1,53 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
 
-const {onRequest} = require("firebase-functions/v2/https");
-const logger = require("firebase-functions/logger");
+admin.initializeApp();
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+exports.syncUserScores = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError("permission-denied", "Unauthenticated user");
+  }
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+  const userId = context.auth.uid;
+  const newEcoScore = data.ecoScore;
+  const newCarbonScore = data.carbonScore;
+  const usersCollection = admin.firestore().collection("users");
+  const userDocRef = usersCollection.doc(userId);
+
+  try {
+    const doc = await userDocRef.get();
+    if (!doc.exists) {
+      const newUser = {
+        username: `user_${Math.floor(Math.random() * 99999)}`,
+        ecoScore: newEcoScore,
+        carbonScore: newCarbonScore,
+      };
+
+      await userDocRef.set(newUser);
+      return newUser;
+    } else {
+      const updates = {};
+      const currentEcoScore = doc.data().ecoScore || 0;
+
+      if (newEcoScore > currentEcoScore) {
+        updates.ecoScore = newEcoScore;
+      }
+
+      if (newCarbonScore !== undefined) {
+        const currentCarbonScore = doc.data().carbonScore || 0;
+        if (newCarbonScore > currentCarbonScore) {
+          updates.carbonScore = newCarbonScore;
+        }
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await userDocRef.update(updates);
+      }
+
+      return { ...doc.data(), ...updates };
+    }
+  } catch (error) {
+    console.error("Error syncing user scores:", error);
+    throw new functions.https.HttpsError("internal", "Failed to sync scores.");
+  }
+});
