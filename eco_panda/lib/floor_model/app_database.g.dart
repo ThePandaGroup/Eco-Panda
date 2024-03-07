@@ -97,7 +97,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Person` (`userId` TEXT, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, PRIMARY KEY (`userId`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `requirement` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` INTEGER NOT NULL, `cType` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `requirement` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` TEXT NOT NULL, `cType` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `History` (`historyId` INTEGER PRIMARY KEY AUTOINCREMENT, `yearMonth` TEXT NOT NULL, `historyCarbonFootprint` INTEGER NOT NULL, `userId` INTEGER NOT NULL)');
         await database.execute(
@@ -315,7 +315,22 @@ class _$ChallengeDao extends ChallengeDao {
             requirement: row['requirement'] as int,
             progress: row['progress'] as int,
             cType: row['cType'] as String,
-            userId: row['userId'] as int));
+            userId: row['userId'] as String));
+  }
+
+  @override
+  Future<List<Challenge>> findChallengesByUid(String uid) async {
+    return _queryAdapter.queryList('SELECT * FROM Challenge WHERE userId = ?1',
+        mapper: (Map<String, Object?> row) => Challenge(
+            challengeId: row['challengeId'] as int?,
+            title: row['title'] as String,
+            challengeDescription: row['challengeDescription'] as String,
+            ecoReward: row['ecoReward'] as int,
+            requirement: row['requirement'] as int,
+            progress: row['progress'] as int,
+            cType: row['cType'] as String,
+            userId: row['userId'] as String),
+        arguments: [uid]);
   }
 
   @override
@@ -329,12 +344,12 @@ class _$ChallengeDao extends ChallengeDao {
             requirement: row['requirement'] as int,
             progress: row['progress'] as int,
             cType: row['cType'] as String,
-            userId: row['userId'] as int),
+            userId: row['userId'] as String),
         arguments: [challengeId]);
   }
 
   @override
-  Future<List<Challenge>> retrieveChallengesByUserId(int userId) async {
+  Future<List<Challenge>> retrieveChallengesByUserId(String userId) async {
     return _queryAdapter.queryList('SELECT * FROM Challenge WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => Challenge(
             challengeId: row['challengeId'] as int?,
@@ -344,7 +359,7 @@ class _$ChallengeDao extends ChallengeDao {
             requirement: row['requirement'] as int,
             progress: row['progress'] as int,
             cType: row['cType'] as String,
-            userId: row['userId'] as int),
+            userId: row['userId'] as String),
         arguments: [userId]);
   }
 
@@ -361,7 +376,7 @@ class _$ChallengeDao extends ChallengeDao {
   @override
   Future<void> updateProgress(
     int challengeId,
-    int userId,
+    String userId,
     int progress,
   ) async {
     await _queryAdapter.queryNoReturn(

@@ -45,13 +45,16 @@ abstract class ChallengeDao {
   @Query('SELECT * FROM Challenge')
   Future<List<Challenge>> retrieveAllChallenges();
 
+  @Query('SELECT * FROM Challenge WHERE userId = :uid')
+  Future<List<Challenge>> findChallengesByUid(String uid);
+
   // Retrieve a challenge by challengeId
   @Query('SELECT * FROM Challenge WHERE challengeId = :challengeId')
   Future<Challenge?> retrieveChallengeById(int challengeId);
 
   // Retrieve challenges based on userId
   @Query('SELECT * FROM Challenge WHERE userId = :userId')
-  Future<List<Challenge>> retrieveChallengesByUserId(int userId);
+  Future<List<Challenge>> retrieveChallengesByUserId(String userId);
 
   // Update ecoReward by challengeId
   @Query('UPDATE Challenge SET ecoReward = :ecoReward WHERE challengeId = :challengeId')
@@ -59,7 +62,7 @@ abstract class ChallengeDao {
 
   // Update progress by challengeId and userId (assuming challengeId is unique and sufficient to identify a challenge, the userId condition may be redundant, but included as per request)
   @Query('UPDATE Challenge SET progress = :progress WHERE challengeId = :challengeId AND userId = :userId')
-  Future<void> updateProgress(int challengeId, int userId, int progress);
+  Future<void> updateProgress(int challengeId, String userId, int progress);
 
   @delete
   Future<int?>removeChallenge(Challenge challenge);

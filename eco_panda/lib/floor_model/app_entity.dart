@@ -26,7 +26,7 @@ class Challenge{
   final int ecoReward;
   final int requirement;
   final int progress;
-  final int userId;
+  final String userId;
   final String cType;
 
   Challenge({
