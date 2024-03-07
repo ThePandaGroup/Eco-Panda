@@ -95,7 +95,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`userId` INTEGER, `userName` TEXT NOT NULL, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, PRIMARY KEY (`userId`))');
+            'CREATE TABLE IF NOT EXISTS `User` (`userId` INTEGER, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, PRIMARY KEY (`userId`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `requirement` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` INTEGER NOT NULL, `cType` TEXT NOT NULL)');
         await database.execute(
@@ -156,7 +156,6 @@ class _$UserDao extends UserDao {
             'User',
             (User item) => <String, Object?>{
                   'userId': item.userId,
-                  'userName': item.userName,
                   'picPath': item.picPath,
                   'ecoScore': item.ecoScore
                 }),
@@ -166,7 +165,6 @@ class _$UserDao extends UserDao {
             ['userId'],
             (User item) => <String, Object?>{
                   'userId': item.userId,
-                  'userName': item.userName,
                   'picPath': item.picPath,
                   'ecoScore': item.ecoScore
                 });
@@ -186,7 +184,6 @@ class _$UserDao extends UserDao {
     return _queryAdapter.queryList('SELECT * FROM User',
         mapper: (Map<String, Object?> row) => User(
             userId: row['userId'] as int?,
-            userName: row['userName'] as String,
             picPath: row['picPath'] as String,
             ecoScore: row['ecoScore'] as int));
   }
@@ -196,7 +193,6 @@ class _$UserDao extends UserDao {
     return _queryAdapter.query('SELECT * FROM User WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => User(
             userId: row['userId'] as int?,
-            userName: row['userName'] as String,
             picPath: row['picPath'] as String,
             ecoScore: row['ecoScore'] as int),
         arguments: [uid]);

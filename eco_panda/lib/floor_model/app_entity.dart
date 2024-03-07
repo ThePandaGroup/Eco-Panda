@@ -6,13 +6,11 @@ class User{
   @primaryKey
   final int? userId;
 
-  final String userName;
   final String picPath;
   final int ecoScore;
 
   User({
     this.userId,
-    required this.userName,
     required this.picPath,
     required this.ecoScore
   });
