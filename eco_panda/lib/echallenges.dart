@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import './floor_model/app_entity.dart';
+import './floor_model/app_database.dart';
 
 class EChallenges extends StatefulWidget {
   const EChallenges({super.key});
@@ -10,29 +12,22 @@ class EChallenges extends StatefulWidget {
 // Change things in here for the page
 class _EChallengesState extends State<EChallenges> {
 
+  // Future<void> retrieveChallenges() async {
+  //
+  // }
+
   static const String cTitle = 'Daily Challenge';
   static const String cDescrpt = 'First Eco route of the day';
   static const int cProgress = 0; //fetch from data base, placeholder value for now
   static const int cRequired = 1;
 
-  static const String cTitleA = 'New User Challenge';
-  static const String cDescriptA = 'Plan your first route';
-  static const int cProgressA = 0; //fetch from data base, placeholder value for now
-  static const int cRequiredA = 1;
-
-  static const String cTitleB = 'Weekly Challenge';
-  static const String cDescripB = 'I planned 10 rountes in the app !';
-  static const int cProgressB = 0; //fetch from data base, placeholder value for now
-  static const int cRequiredB = 10;
 
   @override
   Widget build(BuildContext context) {
     return const SingleChildScrollView(
         child:Column(
             children: [
-              ChallengeCard(title: cTitleA, description: cDescriptA, currentProgress: cProgressA, totalRequired: cRequiredA),
-              ChallengeCard(title: cTitle, description: cDescrpt, currentProgress: cProgress, totalRequired: cRequired),
-              ChallengeCard(title: cTitleB, description: cDescripB, currentProgress: cProgressB, totalRequired: cRequiredB),
+              ChallengeCard(title: cTitle, description: cDescrpt, currentProgress: cProgress, totalRequired: cRequired)
             ]
         )
     );

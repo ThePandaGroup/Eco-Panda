@@ -30,6 +30,7 @@ class Challenge{
   final int ecoReward;
   final int progress;
   final int userId;
+  final String cType;
 
   Challenge({
     this.challengeId,
@@ -37,6 +38,7 @@ class Challenge{
     required this.challengeDescription,
     required this.ecoReward,
     required this.progress,
+    required this.cType,
     required this.userId
   });
 }

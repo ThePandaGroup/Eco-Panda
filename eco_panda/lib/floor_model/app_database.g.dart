@@ -97,7 +97,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `User` (`userId` INTEGER, `userName` TEXT NOT NULL, `picPath` TEXT NOT NULL, `carbonFootprintScore` INTEGER NOT NULL, `ecoScore` INTEGER NOT NULL, PRIMARY KEY (`userId`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` INTEGER NOT NULL, `cType` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `History` (`historyId` INTEGER PRIMARY KEY AUTOINCREMENT, `yearMonth` TEXT NOT NULL, `historyCarbonFootprint` INTEGER NOT NULL, `userId` INTEGER NOT NULL)');
         await database.execute(
@@ -283,7 +283,8 @@ class _$ChallengeDao extends ChallengeDao {
                   'challengeDescription': item.challengeDescription,
                   'ecoReward': item.ecoReward,
                   'progress': item.progress,
-                  'userId': item.userId
+                  'userId': item.userId,
+                  'cType': item.cType
                 }),
         _challengeDeletionAdapter = DeletionAdapter(
             database,
@@ -295,7 +296,8 @@ class _$ChallengeDao extends ChallengeDao {
                   'challengeDescription': item.challengeDescription,
                   'ecoReward': item.ecoReward,
                   'progress': item.progress,
-                  'userId': item.userId
+                  'userId': item.userId,
+                  'cType': item.cType
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -317,6 +319,7 @@ class _$ChallengeDao extends ChallengeDao {
             challengeDescription: row['challengeDescription'] as String,
             ecoReward: row['ecoReward'] as int,
             progress: row['progress'] as int,
+            cType: row['cType'] as String,
             userId: row['userId'] as int));
   }
 
@@ -329,6 +332,7 @@ class _$ChallengeDao extends ChallengeDao {
             challengeDescription: row['challengeDescription'] as String,
             ecoReward: row['ecoReward'] as int,
             progress: row['progress'] as int,
+            cType: row['cType'] as String,
             userId: row['userId'] as int),
         arguments: [challengeId]);
   }
@@ -342,6 +346,7 @@ class _$ChallengeDao extends ChallengeDao {
             challengeDescription: row['challengeDescription'] as String,
             ecoReward: row['ecoReward'] as int,
             progress: row['progress'] as int,
+            cType: row['cType'] as String,
             userId: row['userId'] as int),
         arguments: [userId]);
   }
