@@ -36,6 +36,15 @@ class ProfileSetting extends StatefulWidget {
 
 class _ProfileSettingState extends State<ProfileSetting> {
   final TextEditingController _nameController = TextEditingController();
+  String currentAvatar = 'assets/avatar.png';
+  final List<String> defaultAvatars = [
+    'assets/avatar.png',
+    'assets/avatar1.png',
+    'assets/avatar2.jpeg',
+    'assets/avatar3.jpeg',
+    'assets/avatar4.jpeg',
+    'assets/avatar5.jpeg',
+  ];
 
   @override
   void initState() {
@@ -49,6 +58,7 @@ class _ProfileSettingState extends State<ProfileSetting> {
     if (mounted) {
       setState(() {
         _nameController.text = user?.username ?? "N/A";
+        currentAvatar = user?.picPath ?? 'assets/avatar.png';
       });
     }
   }
@@ -106,6 +116,38 @@ class _ProfileSettingState extends State<ProfileSetting> {
     );
   }
 
+  void _showAvatarSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Choose Avatar'),
+          content: SingleChildScrollView(
+            child: Wrap(
+              spacing: 10.0,
+              runSpacing: 10.0,
+              children: defaultAvatars.map((String avatar) {
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      currentAvatar = avatar;
+                      Provider.of<SyncManager>(context, listen: false).updatePicPath(avatar);
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage(avatar),
+                    radius: 40,
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -127,8 +169,18 @@ class _ProfileSettingState extends State<ProfileSetting> {
               ),
             ),
             const SizedBox(height: 10),
-            // ProfilePictureEditing(), // Uncomment this if you have implemented it.
+            GestureDetector(
+              onTap: _showAvatarSelectionDialog,
+              child: CircleAvatar(
+                backgroundImage: AssetImage(currentAvatar),
+                radius: 50,
+              ),
+            ),
             const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: const Text("Username", style: TextStyle(fontSize: 16)),
+            ),
             Container(
               padding: const EdgeInsets.only(left: 12, right: 3),
               decoration: BoxDecoration(

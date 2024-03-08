@@ -148,4 +148,11 @@ class SyncManager {
     }
     return false;
   }
+
+  Future<void> updatePicPath(String picPath) async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      localDatabase.personDao.updatePicPath(_auth.currentUser!.uid, picPath);
+    }
+  }
 }
