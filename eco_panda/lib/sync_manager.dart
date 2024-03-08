@@ -104,16 +104,16 @@ class SyncManager {
     }
   }
 
-  Future<void> updateUserEcoscore(int ecoScore) async {
+  Future<void> incrementUserEcoscore(int ecoScore) async {
     final user = _auth.currentUser;
     if (user != null) {
       int currentEcoscore = await localDatabase.personDao.retrieveEcoScore(_auth.currentUser!.uid) ?? 0;
       localDatabase.personDao.updateEcoScore(_auth.currentUser!.uid, currentEcoscore + ecoScore);
-      updateUserCloudEcoscore(ecoScore);
+      incrementUserCloudEcoscore(ecoScore);
     }
   }
 
-  Future<void> updateUserCloudEcoscore(int ecoScore) async {
+  Future<void> incrementUserCloudEcoscore(int ecoScore) async {
     FirebaseFunctions functions = FirebaseFunctions.instance;
     try {
       final HttpsCallableResult result = await functions.httpsCallable('updateUserPoints').call({

@@ -86,30 +86,14 @@ abstract class HistoryDao {
   @Query('SELECT * FROM History')
   Future<List<History>> retrieveHistories();
 
+  // Retrieve all history records by userId
+  @Query('SELECT * FROM History WHERE userId = :userId')
+  Future<List<History>> retrieveHistoriesByUserId(String userId);
+
   // Sum all historyCarbonFootprint values in the History table
   @Query('SELECT COALESCE(SUM(historyCarbonFootprint), 0) FROM History')
   Future<int?> sumHistoryCarbonFootprint();
 
-}
-
-@dao
-abstract class LeaderboardDao {
-  // Insert a new leaderboard entry
-  @insert
-  Future<void> insertLeaderboard(Leaderboard leaderboard);
-
-  // Retrieve the top 10 leaderboard entries ordered by rankScore in descending order
-  @Query('SELECT * FROM Leaderboard ORDER BY rankScore DESC LIMIT 10')
-  Future<List<Leaderboard>> retrieveTopLeaderboards();
-
-  // Delete a leaderboard entry
-  @delete
-  Future<void> deleteLeaderboard(Leaderboard leaderboard);
-
-  // Update a leaderboard entry by rankerName
-  // Note: This assumes that rankerName is unique, or you might want to use leaderboardId or another unique identifier for updates.
-  @Query('UPDATE Leaderboard SET rankScore = :rankScore WHERE rankerName = :rankerName')
-  Future<void> updateLeaderboardByRankerName(String rankerName, int rankScore);
 }
 
 @dao
@@ -121,6 +105,10 @@ abstract class DestinationDao {
   // Retrieve all records
   @Query('SELECT * FROM Destination')
   Future<List<Destination>> retrievePastDestinations();
+
+  // Retrieve a destination by userId
+  @Query('SELECT * FROM Destination WHERE userId = :userId')
+  Future<List<Destination>> retrieveDestinationsByUid(String userId);
 
   // Delete a destination
   @delete
@@ -136,6 +124,10 @@ abstract class SettingDao {
   // Retrieve a setting by settingType
   @Query('SELECT * FROM Setting WHERE settingType = :settingType')
   Future<Setting?> retrieveSettingByType(String settingType);
+
+  // Retrieve all settings by userId
+  @Query('SELECT * FROM Setting WHERE userId = :userId')
+  Future<List<Setting>> retrieveSettingsByUid(String userId);
 
   // Delete a setting
   @delete

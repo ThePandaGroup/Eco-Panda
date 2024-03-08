@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:eco_panda/ehomepage.dart';
 import 'package:eco_panda/floor_model/app_database.dart';
 import 'package:eco_panda/floor_model/app_entity.dart';
+import 'package:eco_panda/sync_manager.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -345,6 +347,7 @@ class _EMapNavState extends State<EMapNav> {
 
     final placeName = await getPlaceName();
     final newDestination = Destination(
+      userId: FirebaseAuth.instance.currentUser!.uid,
       address: placeName,
       latitude: _destination!.latitude,
       longitude: _destination!.longitude,
@@ -352,6 +355,8 @@ class _EMapNavState extends State<EMapNav> {
     );
 
     await addDestination(newDestination);
+    await Provider.of<SyncManager>(context, listen: false).incrementUserEcoscore(earnedCarbonPts);
+
     resetState();
   }
 
@@ -417,7 +422,7 @@ class _EMapNavState extends State<EMapNav> {
 
     await localDb.destinationDao.insertDestination(destination);
 
-    final records = await localDb.destinationDao.retrievePastDestinations();
+    final records = await localDb.destinationDao.retrieveDestinationsByUid(FirebaseAuth.instance.currentUser!.uid);
 
     if (records.length > 5) {
       await localDb.destinationDao.deleteDestination(records.last);

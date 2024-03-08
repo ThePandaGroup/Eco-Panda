@@ -52,7 +52,7 @@ class History{
 
   final String yearMonth;
   final int historyCarbonFootprint;
-  final int userId;
+  final String userId;
 
   History({
     this.historyId,
@@ -62,27 +62,12 @@ class History{
   });
 }
 
-@Entity(tableName: "Leaderboard")
-class Leaderboard{
-  @PrimaryKey(autoGenerate: true)
-  final int? leaderboardId;
-
-  final int rankScore;
-  final String rankerName;
-
-  Leaderboard({
-    this.leaderboardId,
-    required this.rankerName,
-    required this.rankScore
-  });
-
-}
-
 @Entity(tableName: "Destination")
 class Destination{
   @PrimaryKey(autoGenerate: true)
   final int? destinationId;
 
+  final String userId;
   final String address;
   final double latitude;
   final double longitude;
@@ -91,6 +76,7 @@ class Destination{
 
   Destination({
     this.destinationId,
+    required this.userId,
     required this.address,
     required this.latitude,
     required this.longitude,
@@ -104,11 +90,12 @@ class Setting{
   final String settingType;
 
   final bool on;
-
+  final String userId;
 
   Setting({
     required this.settingType,
-    required this.on
+    required this.on,
+    required this.userId
   });
 }
 

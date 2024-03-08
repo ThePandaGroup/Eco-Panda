@@ -67,8 +67,6 @@ class _$AppDatabase extends AppDatabase {
 
   HistoryDao? _historyDaoInstance;
 
-  LeaderboardDao? _leaderboardDaoInstance;
-
   DestinationDao? _destinationDaoInstance;
 
   SettingDao? _settingDaoInstance;
@@ -99,13 +97,11 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `requirement` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` TEXT NOT NULL, `cType` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `History` (`historyId` INTEGER PRIMARY KEY AUTOINCREMENT, `yearMonth` TEXT NOT NULL, `historyCarbonFootprint` INTEGER NOT NULL, `userId` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `History` (`historyId` INTEGER PRIMARY KEY AUTOINCREMENT, `yearMonth` TEXT NOT NULL, `historyCarbonFootprint` INTEGER NOT NULL, `userId` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Leaderboard` (`leaderboardId` INTEGER PRIMARY KEY AUTOINCREMENT, `rankScore` INTEGER NOT NULL, `rankerName` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Destination` (`destinationId` INTEGER PRIMARY KEY AUTOINCREMENT, `userId` TEXT NOT NULL, `address` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `carbonFootprintScore` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Destination` (`destinationId` INTEGER PRIMARY KEY AUTOINCREMENT, `address` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `carbonFootprintScore` INTEGER NOT NULL)');
-        await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Setting` (`settingType` TEXT NOT NULL, `on` INTEGER NOT NULL, PRIMARY KEY (`settingType`))');
+            'CREATE TABLE IF NOT EXISTS `Setting` (`settingType` TEXT NOT NULL, `on` INTEGER NOT NULL, `userId` TEXT NOT NULL, PRIMARY KEY (`settingType`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -126,12 +122,6 @@ class _$AppDatabase extends AppDatabase {
   @override
   HistoryDao get historyDao {
     return _historyDaoInstance ??= _$HistoryDao(database, changeListener);
-  }
-
-  @override
-  LeaderboardDao get leaderboardDao {
-    return _leaderboardDaoInstance ??=
-        _$LeaderboardDao(database, changeListener);
   }
 
   @override
@@ -440,7 +430,7 @@ class _$HistoryDao extends HistoryDao {
             historyId: row['historyId'] as int?,
             yearMonth: row['yearMonth'] as String,
             historyCarbonFootprint: row['historyCarbonFootprint'] as int,
-            userId: row['userId'] as int),
+            userId: row['userId'] as String),
         arguments: [yearMonth, userId]);
   }
 
@@ -462,7 +452,18 @@ class _$HistoryDao extends HistoryDao {
             historyId: row['historyId'] as int?,
             yearMonth: row['yearMonth'] as String,
             historyCarbonFootprint: row['historyCarbonFootprint'] as int,
-            userId: row['userId'] as int));
+            userId: row['userId'] as String));
+  }
+
+  @override
+  Future<List<History>> retrieveHistoriesByUserId(String userId) async {
+    return _queryAdapter.queryList('SELECT * FROM History WHERE userId = ?1',
+        mapper: (Map<String, Object?> row) => History(
+            historyId: row['historyId'] as int?,
+            yearMonth: row['yearMonth'] as String,
+            historyCarbonFootprint: row['historyCarbonFootprint'] as int,
+            userId: row['userId'] as String),
+        arguments: [userId]);
   }
 
   @override
@@ -478,71 +479,6 @@ class _$HistoryDao extends HistoryDao {
   }
 }
 
-class _$LeaderboardDao extends LeaderboardDao {
-  _$LeaderboardDao(
-    this.database,
-    this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
-        _leaderboardInsertionAdapter = InsertionAdapter(
-            database,
-            'Leaderboard',
-            (Leaderboard item) => <String, Object?>{
-                  'leaderboardId': item.leaderboardId,
-                  'rankScore': item.rankScore,
-                  'rankerName': item.rankerName
-                }),
-        _leaderboardDeletionAdapter = DeletionAdapter(
-            database,
-            'Leaderboard',
-            ['leaderboardId'],
-            (Leaderboard item) => <String, Object?>{
-                  'leaderboardId': item.leaderboardId,
-                  'rankScore': item.rankScore,
-                  'rankerName': item.rankerName
-                });
-
-  final sqflite.DatabaseExecutor database;
-
-  final StreamController<String> changeListener;
-
-  final QueryAdapter _queryAdapter;
-
-  final InsertionAdapter<Leaderboard> _leaderboardInsertionAdapter;
-
-  final DeletionAdapter<Leaderboard> _leaderboardDeletionAdapter;
-
-  @override
-  Future<List<Leaderboard>> retrieveTopLeaderboards() async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM Leaderboard ORDER BY rankScore DESC LIMIT 10',
-        mapper: (Map<String, Object?> row) => Leaderboard(
-            leaderboardId: row['leaderboardId'] as int?,
-            rankerName: row['rankerName'] as String,
-            rankScore: row['rankScore'] as int));
-  }
-
-  @override
-  Future<void> updateLeaderboardByRankerName(
-    String rankerName,
-    int rankScore,
-  ) async {
-    await _queryAdapter.queryNoReturn(
-        'UPDATE Leaderboard SET rankScore = ?2 WHERE rankerName = ?1',
-        arguments: [rankerName, rankScore]);
-  }
-
-  @override
-  Future<void> insertLeaderboard(Leaderboard leaderboard) async {
-    await _leaderboardInsertionAdapter.insert(
-        leaderboard, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> deleteLeaderboard(Leaderboard leaderboard) async {
-    await _leaderboardDeletionAdapter.delete(leaderboard);
-  }
-}
-
 class _$DestinationDao extends DestinationDao {
   _$DestinationDao(
     this.database,
@@ -553,6 +489,7 @@ class _$DestinationDao extends DestinationDao {
             'Destination',
             (Destination item) => <String, Object?>{
                   'destinationId': item.destinationId,
+                  'userId': item.userId,
                   'address': item.address,
                   'latitude': item.latitude,
                   'longitude': item.longitude,
@@ -564,6 +501,7 @@ class _$DestinationDao extends DestinationDao {
             ['destinationId'],
             (Destination item) => <String, Object?>{
                   'destinationId': item.destinationId,
+                  'userId': item.userId,
                   'address': item.address,
                   'latitude': item.latitude,
                   'longitude': item.longitude,
@@ -585,10 +523,25 @@ class _$DestinationDao extends DestinationDao {
     return _queryAdapter.queryList('SELECT * FROM Destination',
         mapper: (Map<String, Object?> row) => Destination(
             destinationId: row['destinationId'] as int?,
+            userId: row['userId'] as String,
             address: row['address'] as String,
             latitude: row['latitude'] as double,
             longitude: row['longitude'] as double,
             carbonFootprintScore: row['carbonFootprintScore'] as int));
+  }
+
+  @override
+  Future<List<Destination>> retrieveDestinationsByUid(String userId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM Destination WHERE userId = ?1',
+        mapper: (Map<String, Object?> row) => Destination(
+            destinationId: row['destinationId'] as int?,
+            userId: row['userId'] as String,
+            address: row['address'] as String,
+            latitude: row['latitude'] as double,
+            longitude: row['longitude'] as double,
+            carbonFootprintScore: row['carbonFootprintScore'] as int),
+        arguments: [userId]);
   }
 
   @override
@@ -613,7 +566,8 @@ class _$SettingDao extends SettingDao {
             'Setting',
             (Setting item) => <String, Object?>{
                   'settingType': item.settingType,
-                  'on': item.on ? 1 : 0
+                  'on': item.on ? 1 : 0,
+                  'userId': item.userId
                 }),
         _settingDeletionAdapter = DeletionAdapter(
             database,
@@ -621,7 +575,8 @@ class _$SettingDao extends SettingDao {
             ['settingType'],
             (Setting item) => <String, Object?>{
                   'settingType': item.settingType,
-                  'on': item.on ? 1 : 0
+                  'on': item.on ? 1 : 0,
+                  'userId': item.userId
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -639,8 +594,19 @@ class _$SettingDao extends SettingDao {
     return _queryAdapter.query('SELECT * FROM Setting WHERE settingType = ?1',
         mapper: (Map<String, Object?> row) => Setting(
             settingType: row['settingType'] as String,
-            on: (row['on'] as int) != 0),
+            on: (row['on'] as int) != 0,
+            userId: row['userId'] as String),
         arguments: [settingType]);
+  }
+
+  @override
+  Future<List<Setting>> retrieveSettingsByUid(String userId) async {
+    return _queryAdapter.queryList('SELECT * FROM Setting WHERE userId = ?1',
+        mapper: (Map<String, Object?> row) => Setting(
+            settingType: row['settingType'] as String,
+            on: (row['on'] as int) != 0,
+            userId: row['userId'] as String),
+        arguments: [userId]);
   }
 
   @override
