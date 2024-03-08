@@ -1,7 +1,12 @@
+import 'package:eco_panda/sync_manager.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import './page_template.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'floor_model/app_database.dart';
+import 'floor_model/app_entity.dart';
 
 // Alex is doing it
 class ESettings extends StatefulWidget {
@@ -12,14 +17,30 @@ class ESettings extends StatefulWidget {
 }
 
 class _ESettingsState extends State<ESettings> {
+  Person? currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentUser();
+  }
+
+  void _fetchCurrentUser() async {
+    final localDb = Provider.of<AppDatabase>(context, listen: false);
+    final user = await localDb.personDao.findUserByUid(FirebaseAuth.instance.currentUser!.uid);
+    setState(() {
+      currentUser = user;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(),
-      body:const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            ProfileSetting(),
+            ProfileSetting(currentUser: currentUser),
             NotificationSetting(),
             AccessPrivilegeSetting()
           ],
@@ -30,7 +51,8 @@ class _ESettingsState extends State<ESettings> {
 }
 
 class ProfileSetting extends StatelessWidget{
-  const ProfileSetting({super.key});
+  final Person? currentUser;
+  const ProfileSetting({super.key, this.currentUser});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +66,7 @@ class ProfileSetting extends StatelessWidget{
         color: Colors.yellow,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: const Column(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Center(child:Text("Profile Setting",
@@ -55,7 +77,7 @@ class ProfileSetting extends StatelessWidget{
           ),
           SizedBox(height: 10),
           ProfilePictureEditing(),
-          ProfileNameSetting(),
+          ProfileNameSetting(currentUser: currentUser),
         ],
       ),
     );
@@ -68,17 +90,17 @@ class NotificationSetting extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16.0), // Add some padding inside the container
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.blue,
           width: 2.0,
         ),
         color: Colors.green,
-        borderRadius: BorderRadius.circular(10), // Optional: if you want rounded corners
+        borderRadius: BorderRadius.circular(10),
       ),
       child: const Column(
-        mainAxisSize: MainAxisSize.min, // Use min to fit content
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Center(child: Text("Notifications",
             style: TextStyle(
@@ -140,7 +162,6 @@ class ProfilePictureEditing extends StatefulWidget {
 class _ProfilePicState extends State<ProfilePictureEditing> {
   File? _image;
 
-
   Future<void> _pickImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -177,7 +198,9 @@ class _ProfilePicState extends State<ProfilePictureEditing> {
 }
 
 class ProfileNameSetting extends StatefulWidget {
-  const ProfileNameSetting({super.key});
+  final Person? currentUser;
+
+  const ProfileNameSetting({super.key, this.currentUser});
 
   @override
   _ProfileNameSettingState createState() => _ProfileNameSettingState();
@@ -185,18 +208,42 @@ class ProfileNameSetting extends StatefulWidget {
 
 class _ProfileNameSettingState extends State<ProfileNameSetting> {
   final TextEditingController _nameController = TextEditingController();
-  String _profileName = "John Hougland";
+  late String _profileName;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileName = widget.currentUser?.username ?? "N/A";
+    _nameController.text = _profileName;
+  }
 
   @override
   void dispose() {
-    _nameController.dispose(); // Don't forget to dispose of the controller
+    _nameController.dispose();
     super.dispose();
   }
 
-  void _saveProfileName() {
+  void _saveProfileName() async {
     setState(() {
-      _profileName = _nameController.text; // Update profile name with input value
+      _profileName = _nameController.text;
     });
+    bool isUpdated = await Provider.of<SyncManager>(context, listen: false).updateUsername(_nameController.text);
+    if (isUpdated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Username successfully changed to $_profileName'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to change username'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -211,7 +258,7 @@ class _ProfileNameSettingState extends State<ProfileNameSetting> {
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
-                labelText: "New Profile Name",
+                labelText: "New Username",
                 border: OutlineInputBorder(),
               ),
             ),

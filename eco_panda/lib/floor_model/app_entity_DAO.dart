@@ -21,14 +21,14 @@ abstract class PersonDao {
   @Query("UPDATE Person SET rank = :rank WHERE userId = :userId")
   Future<void> updateRank(String userId, int rank);
 
+  @Query("UPDATE Person SET username = :username WHERE userId = :userId")
+  Future<void> updateUsername(String userId, String username);
+
   @Query('SELECT picPath FROM Person WHERE userId = :userId')
   Future<String?> retrievePicPath(String userId);
 
   @Query('SELECT ecoScore FROM Person WHERE userId = :userId')
   Future<int?> retrieveEcoScore(String userId);
-
-  @Query('SELECT carbonFootprintScore FROM Person WHERE userId = :userId')
-  Future<int?> retrieveCarbonFootprintScore(int userId);
 
   @delete
   Future<int?>removeUser(Person user);

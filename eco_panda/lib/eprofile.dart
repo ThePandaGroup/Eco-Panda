@@ -14,13 +14,14 @@ class EProfile extends StatefulWidget {
 class _EProfileState extends State<EProfile> {
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
+    return SingleChildScrollView(
         child: Padding(
         padding: EdgeInsets.all(12.0),
-    child: Column(
-      children: [ProfileSection(), AchievementSection(),EcoHistorySection(), SettingSection()],
-    )
-    )
+          child: Column(
+            // children: [ProfileSection(), AchievementSection(),EcoHistorySection(), SettingSection()],
+            children: [AchievementSection(),EcoHistorySection(), SettingSection()],
+          )
+        )
     );
   }
 }
@@ -35,8 +36,8 @@ class ProfileSection extends StatelessWidget{
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const CircleAvatar(
-            backgroundImage: AssetImage('assets/avatar.png'), // Placeholder for an user avatar
+          CircleAvatar(
+            backgroundImage: AssetImage('assets/avatar.png'),
             radius: 30,
           ),
           const SizedBox(width: 15),
@@ -44,15 +45,15 @@ class ProfileSection extends StatelessWidget{
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'John Hougland',
+                Text(
+                  'John',
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
-                const Text(
-                  'Your Eco Score: 85',
+                Text(
+                  'Your Eco Score: 80 points',
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 14

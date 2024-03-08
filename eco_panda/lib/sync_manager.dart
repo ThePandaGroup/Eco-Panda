@@ -106,9 +106,14 @@ class SyncManager {
 
   Future<void> updateUserEcoscore(int ecoScore) async {
     final user = _auth.currentUser;
-    if (user == null) {
-      return;
+    if (user != null) {
+      int currentEcoscore = await localDatabase.personDao.retrieveEcoScore(_auth.currentUser!.uid) ?? 0;
+      localDatabase.personDao.updateEcoScore(_auth.currentUser!.uid, currentEcoscore + ecoScore);
+      updateUserCloudEcoscore(ecoScore);
     }
+  }
+
+  Future<void> updateUserCloudEcoscore(int ecoScore) async {
     FirebaseFunctions functions = FirebaseFunctions.instance;
     try {
       final HttpsCallableResult result = await functions.httpsCallable('updateUserPoints').call({
@@ -120,19 +125,26 @@ class SyncManager {
     }
   }
 
-  Future<void> updateUsername(String newUsername) async {
+  Future<bool> updateUsername(String newUsername) async {
     final user = _auth.currentUser;
-    if (user == null) {
-      return;
+    if (user != null) {
+      localDatabase.personDao.updateUsername(_auth.currentUser!.uid, newUsername);
+      return await updateCloudUsername(newUsername);
     }
+    return false;
+  }
+
+  Future<bool> updateCloudUsername(String newUsername) async {
     HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('updateUsername');
     try {
       final response = await callable.call({
         'username': newUsername,
       });
       print(response.data);
+      return true;
     } catch (e) {
       print(e);
     }
+    return false;
   }
 }

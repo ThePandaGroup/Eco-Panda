@@ -237,6 +237,16 @@ class _$PersonDao extends PersonDao {
   }
 
   @override
+  Future<void> updateUsername(
+    String userId,
+    String username,
+  ) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE Person SET username = ?2 WHERE userId = ?1',
+        arguments: [userId, username]);
+  }
+
+  @override
   Future<String?> retrievePicPath(String userId) async {
     return _queryAdapter.query('SELECT picPath FROM Person WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => row.values.first as String,
@@ -246,14 +256,6 @@ class _$PersonDao extends PersonDao {
   @override
   Future<int?> retrieveEcoScore(String userId) async {
     return _queryAdapter.query('SELECT ecoScore FROM Person WHERE userId = ?1',
-        mapper: (Map<String, Object?> row) => row.values.first as int,
-        arguments: [userId]);
-  }
-
-  @override
-  Future<int?> retrieveCarbonFootprintScore(int userId) async {
-    return _queryAdapter.query(
-        'SELECT carbonFootprintScore FROM Person WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => row.values.first as int,
         arguments: [userId]);
   }
