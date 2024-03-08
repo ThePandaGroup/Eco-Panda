@@ -419,14 +419,7 @@ class _EMapNavState extends State<EMapNav> {
 
   Future<void> addDestination(Destination destination) async {
     final localDb = Provider.of<AppDatabase>(context, listen: false);
-
     await localDb.destinationDao.insertDestination(destination);
-
-    final records = await localDb.destinationDao.retrieveDestinationsByUid(FirebaseAuth.instance.currentUser!.uid);
-
-    if (records.length > 5) {
-      await localDb.destinationDao.deleteDestination(records.last);
-    }
   }
 
   @override
