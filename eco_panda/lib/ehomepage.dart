@@ -1,8 +1,12 @@
+import 'package:eco_panda/floor_model/app_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import './emap_nav.dart';
 import './ecarbon_history.dart';
 import './page_template.dart';
 import './eleaderboards.dart';
+import 'floor_model/app_entity.dart';
 
 enum TransportMode { walk, bicycle, transit, drive }
 
@@ -14,7 +18,22 @@ class EPandaHomepage extends StatefulWidget {
 }
 
 class _EPandaHomepageState extends State<EPandaHomepage> {
+  Person? currentUser;
   TransportMode? _selectedMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentUser();
+  }
+
+  void _fetchCurrentUser() async {
+    final localDb = Provider.of<AppDatabase>(context, listen: false);
+    final user = await localDb.personDao.findUserByUid(FirebaseAuth.instance.currentUser!.uid);
+    setState(() {
+      currentUser = user;
+    });
+  }
 
   Widget _buildTransportButton(String mode, TransportMode value) {
     return ElevatedButton(
@@ -42,7 +61,7 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CircleAvatar(
-                          backgroundImage: AssetImage('assets/avatar.png'), // Placeholder for an user avatar
+                          backgroundImage: AssetImage(currentUser?.picPath ?? 'assets/avatar.png'),
                           radius: 30,
                         ),
                         SizedBox(width: 15),
@@ -51,11 +70,11 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Welcome back, John!',
+                                'Welcome back, ${currentUser?.username ?? "user"}!',
                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                'Your Eco Score: 85',
+                                'Your Eco Score: ${currentUser?.ecoScore ?? 0} points',
                                 style: TextStyle(fontSize: 14),
                               ),
                               SizedBox(height: 10),
@@ -148,11 +167,11 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
                         ),
                         const SizedBox(height: 8),
-                        const Row(
+                        Row(
                           children: [
-                            Icon(Icons.leaderboard, color: Colors.green),
-                            SizedBox(width: 8),
-                            Text("109. John - 50 points", style: TextStyle(fontSize: 14, color: Colors.black)),
+                            const Icon(Icons.leaderboard, color: Colors.green),
+                            const SizedBox(width: 8),
+                            Text("${currentUser?.rank ?? "??"}. ${currentUser?.username} - ${currentUser?.ecoScore} points", style: TextStyle(fontSize: 14, color: Colors.black)),
                           ],
                         ),
 
@@ -163,7 +182,7 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => ELeaderboards(leaderboardService: FirebaseLeaderboardService(),)),
+                                MaterialPageRoute(builder: (context) => ELeaderboards()),
                               );
                             },
                             child: const Row(

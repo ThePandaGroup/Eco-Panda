@@ -95,7 +95,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Person` (`userId` TEXT, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, PRIMARY KEY (`userId`))');
+            'CREATE TABLE IF NOT EXISTS `Person` (`userId` TEXT NOT NULL, `username` TEXT NOT NULL, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, `rank` INTEGER, PRIMARY KEY (`userId`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `requirement` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` TEXT NOT NULL, `cType` TEXT NOT NULL)');
         await database.execute(
@@ -156,8 +156,10 @@ class _$PersonDao extends PersonDao {
             'Person',
             (Person item) => <String, Object?>{
                   'userId': item.userId,
+                  'username': item.username,
                   'picPath': item.picPath,
-                  'ecoScore': item.ecoScore
+                  'ecoScore': item.ecoScore,
+                  'rank': item.rank
                 }),
         _personDeletionAdapter = DeletionAdapter(
             database,
@@ -165,8 +167,10 @@ class _$PersonDao extends PersonDao {
             ['userId'],
             (Person item) => <String, Object?>{
                   'userId': item.userId,
+                  'username': item.username,
                   'picPath': item.picPath,
-                  'ecoScore': item.ecoScore
+                  'ecoScore': item.ecoScore,
+                  'rank': item.rank
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -183,18 +187,22 @@ class _$PersonDao extends PersonDao {
   Future<List<Person>> retrieveOnlyUser() async {
     return _queryAdapter.queryList('SELECT * FROM Person',
         mapper: (Map<String, Object?> row) => Person(
-            userId: row['userId'] as String?,
+            userId: row['userId'] as String,
+            username: row['username'] as String,
             picPath: row['picPath'] as String,
-            ecoScore: row['ecoScore'] as int));
+            ecoScore: row['ecoScore'] as int,
+            rank: row['rank'] as int?));
   }
 
   @override
   Future<Person?> findUserByUid(String uid) async {
     return _queryAdapter.query('SELECT * FROM Person WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => Person(
-            userId: row['userId'] as String?,
+            userId: row['userId'] as String,
+            username: row['username'] as String,
             picPath: row['picPath'] as String,
-            ecoScore: row['ecoScore'] as int),
+            ecoScore: row['ecoScore'] as int,
+            rank: row['rank'] as int?),
         arguments: [uid]);
   }
 
@@ -219,13 +227,13 @@ class _$PersonDao extends PersonDao {
   }
 
   @override
-  Future<void> updateCarbonFootprintScore(
+  Future<void> updateRank(
     String userId,
-    int carbonFt,
+    int rank,
   ) async {
     await _queryAdapter.queryNoReturn(
-        'UPDATE Person SET carbonFootprintScore = ?2 WHERE userId = ?1',
-        arguments: [userId, carbonFt]);
+        'UPDATE Person SET rank = ?2 WHERE userId = ?1',
+        arguments: [userId, rank]);
   }
 
   @override

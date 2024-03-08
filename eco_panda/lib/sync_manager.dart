@@ -3,6 +3,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'floor_model/app_database.dart';
 import 'floor_model/app_entity.dart';
+import 'dart:math' as math;
 
 class SyncManager {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,6 +16,7 @@ class SyncManager {
     final user = _auth.currentUser;
     if (user != null) {
       await syncUsers();
+      await syncUserRank();
       await syncChallenges();
     }
   }
@@ -22,26 +24,29 @@ class SyncManager {
   Future<void> syncUsers() async {
     final user = await localDatabase.personDao.findUserByUid(_auth.currentUser!.uid);
     int ecoScore = user?.ecoScore ?? 0;
+    String username = user?.username ?? 'user_${math.Random().nextInt(99999)}';
 
     if (user == null) {
       await localDatabase.personDao.insertUser(Person(
         userId: _auth.currentUser!.uid,
+        username: username,
         picPath: 'assets/avatar.png',
         ecoScore: 0,
       ));
     }
 
-    int updatedEcoScore = await syncCloudUsers(ecoScore);
+    int updatedEcoScore = await syncCloudUsers(ecoScore, username);
     if (ecoScore != updatedEcoScore) {
       localDatabase.personDao.updateEcoScore(FirebaseAuth.instance.currentUser!.uid, updatedEcoScore);
     }
   }
 
-  Future<int> syncCloudUsers(int ecoScore) async {
-    HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('syncUserEcoScore');
+  Future<int> syncCloudUsers(int ecoScore, String username) async {
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('syncUserState');
     try {
       final result = await callable.call(<String, dynamic>{
         'ecoScore': ecoScore,
+        'username': username,
       });
       final int updatedEcoScore = result.data['ecoScore'];
       print("Successfully synced ecoScore. Result: ${result.data}");
@@ -52,6 +57,26 @@ class SyncManager {
       print("An error occurred: $e");
     }
     return ecoScore;
+  }
+
+  Future<void> syncUserRank() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      return;
+    }
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('getUserRank');
+    try {
+      final HttpsCallableResult result = await callable.call();
+      final rank = result.data['rank'];
+      print("User rank: $rank");
+      if (rank != -1) {
+        await localDatabase.personDao.updateRank(user.uid, rank);
+      }
+    } on FirebaseFunctionsException catch (e) {
+      print("Failed to fetch user rank: ${e.code} - ${e.message}");
+    } catch (e) {
+      print("An error occurred while fetching user rank: $e");
+    }
   }
 
   Future<void> syncChallenges() async {
@@ -79,8 +104,35 @@ class SyncManager {
     }
   }
 
-  Future<void> updateUserPts() async {
-    // Implement your comparison and updating logic here
-    // For example, comparing ecoScores and updating accordingly
+  Future<void> updateUserEcoscore(int ecoScore) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      return;
+    }
+    FirebaseFunctions functions = FirebaseFunctions.instance;
+    try {
+      final HttpsCallableResult result = await functions.httpsCallable('updateUserPoints').call({
+        'ecoScore': ecoScore,
+      });
+      print("Function result: ${result.data}");
+    } catch (e) {
+      print("Error calling function: $e");
+    }
+  }
+
+  Future<void> updateUsername(String newUsername) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      return;
+    }
+    HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('updateUsername');
+    try {
+      final response = await callable.call({
+        'username': newUsername,
+      });
+      print(response.data);
+    } catch (e) {
+      print(e);
+    }
   }
 }

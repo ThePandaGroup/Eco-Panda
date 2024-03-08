@@ -4,15 +4,19 @@ import 'package:floor/floor.dart';
 class Person{
 
   @primaryKey
-  final String? userId;
+  final String userId;
 
+  String username;
   final String picPath;
   final int ecoScore;
+  final int? rank;
 
   Person({
-    this.userId,
+    required this.userId,
+    required this.username,
     required this.picPath,
-    required this.ecoScore
+    required this.ecoScore,
+    this.rank
   });
 }
 
