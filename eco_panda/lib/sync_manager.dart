@@ -37,7 +37,7 @@ class SyncManager {
 
     int updatedEcoScore = await syncCloudUsers(ecoScore, username);
     if (ecoScore != updatedEcoScore) {
-      localDatabase.personDao.updateEcoScore(FirebaseAuth.instance.currentUser!.uid, updatedEcoScore);
+      localDatabase.personDao.updateEcoScore(_auth.currentUser!.uid, updatedEcoScore);
     }
   }
 
@@ -50,6 +50,7 @@ class SyncManager {
       });
       final int updatedEcoScore = result.data['ecoScore'];
       print("Successfully synced ecoScore. Result: ${result.data}");
+      localDatabase.personDao.updateUsername(_auth.currentUser!.uid, username);
       return updatedEcoScore;
     } on FirebaseFunctionsException catch (e) {
       print("Failed to sync ecoScore: ${e.code} - ${e.message}");

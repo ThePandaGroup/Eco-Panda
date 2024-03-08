@@ -1,9 +1,11 @@
+import 'package:eco_panda/sync_manager.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import './page_template.dart';
 import './ecarbon_history.dart';
-import './esettings.dart';
+import 'floor_model/app_database.dart';
 
-// Alex is doing it lmao
 class EProfile extends StatefulWidget {
   const EProfile({super.key});
 
@@ -14,85 +16,151 @@ class EProfile extends StatefulWidget {
 class _EProfileState extends State<EProfile> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return const SingleChildScrollView(
         child: Padding(
         padding: EdgeInsets.all(12.0),
           child: Column(
-            // children: [ProfileSection(), AchievementSection(),EcoHistorySection(), SettingSection()],
-            children: [AchievementSection(),EcoHistorySection(), SettingSection()],
+            children: [ProfileSetting(), AchievementSection(),EcoHistorySection()],
           )
         )
     );
   }
 }
 
-class ProfileSection extends StatelessWidget{
-  const ProfileSection({super.key});
+class ProfileSetting extends StatefulWidget {
+  const ProfileSetting({super.key});
 
   @override
-  Widget build(BuildContext context){
-    return CustomContainerCardWithBackground(
-      backgroundImage: "assets/environmental_background.png",
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            backgroundImage: AssetImage('assets/avatar.png'),
-            radius: 30,
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'John',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Your Eco Score: 80 points',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ESettings()),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      side: const BorderSide(color: Colors.grey),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text('Edit Profile',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12)
-                        ),
-                        Icon(Icons.arrow_forward_ios, size: 16.0),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+  State<ProfileSetting> createState() => _ProfileSettingState();
+}
+
+class _ProfileSettingState extends State<ProfileSetting> {
+  final TextEditingController _nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentUser();
+  }
+
+  void _fetchCurrentUser() async {
+    final localDb = Provider.of<AppDatabase>(context, listen: false);
+    final user = await localDb.personDao.findUserByUid(FirebaseAuth.instance.currentUser!.uid);
+    if (mounted) {
+      setState(() {
+        _nameController.text = user?.username ?? "N/A";
+      });
+    }
+  }
+
+  void _saveProfileName() async {
+    bool isUpdated = await Provider.of<SyncManager>(context, listen: false).updateUsername(_nameController.text);
+    if (isUpdated) {
+      _fetchCurrentUser();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Username successfully changed'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to change username'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _showChangeUsernameDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Change Username'),
+          content: TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              labelText: "New Username",
             ),
           ),
-        ],
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Save'),
+              onPressed: () {
+                _saveProfileName();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(16.0),
+      elevation: 5,
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const Center(
+              child: Text(
+                "Profile Setting",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            // ProfilePictureEditing(), // Uncomment this if you have implemented it.
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.only(left: 12, right: 3),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      _nameController.text,
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: _showChangeUsernameDialog,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 }
 
@@ -140,33 +208,6 @@ class EcoHistorySection extends StatelessWidget{
           ),
         ),
         TemplateCard(backgroundImage: "assets/bluesky.png", actiontxt: "Go to Carbon History",resPage: ECarbonHistory(),)
-      ],
-
-    );
-  }
-
-}
-
-
-class SettingSection extends StatelessWidget{
-  const SettingSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(
-            'Setting',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        TemplateCard(backgroundImage: "assets/machinery.png", actiontxt: "Go to Setting",resPage: ESettings())
       ],
 
     );
