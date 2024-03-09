@@ -55,6 +55,7 @@ dependencies:
   mockito: ^5.4.4
   full_coverage: ^1.0.0
   fake_cloud_firestore: ^2.4.8
+  firebase_auth_mocks: ^0.13.0
 
 dev_dependencies:
   flutter_test:
