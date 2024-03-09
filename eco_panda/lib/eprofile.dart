@@ -15,13 +15,11 @@ class EProfile extends StatefulWidget {
 class _EProfileState extends State<EProfile> {
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-        child: Padding(
+    return const Padding(
         padding: EdgeInsets.all(12.0),
           child: Column(
             children: [ProfileSetting(), RecentDestinationHistory()],
           )
-        )
     );
   }
 }
@@ -254,27 +252,29 @@ class _RecentDestinationHistoryState extends State<RecentDestinationHistory> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        _recentDestinations.isEmpty
+    _recentDestinations.isEmpty
             ? Center(child: Text("No recent destinations"))
-            : Expanded(
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: _recentDestinations.length,
-            itemBuilder: (context, index) {
-              final destination = _recentDestinations[index];
-              return ListTile(
-                leading: Icon(Icons.location_pin),
-                title: Text(destination.address),
-                subtitle: Text("Earned Eco Score: ${destination.carbonFootprintScore}"),
-                trailing: IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () => _deleteDestination(destination),
-                ),
-              );
-            },
-          ),
-        ),
+            :SingleChildScrollView(
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: _recentDestinations.length,
+        itemBuilder: (context, index) {
+          final destination = _recentDestinations[index];
+          return ListTile(
+            leading: Icon(Icons.location_pin),
+            title: Text(destination.address),
+            subtitle: Text("Earned Eco Score: ${destination.carbonFootprintScore}"),
+            trailing: IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => _deleteDestination(destination),
+            ),
+          );
+        },
+      ),
+    )
+
       ],
     );
   }
 }
+
