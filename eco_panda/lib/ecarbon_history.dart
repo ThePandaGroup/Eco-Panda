@@ -3,8 +3,13 @@
 import 'dart:math';
 
 import 'package:eco_panda/page_template.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:provider/provider.dart';
+
+import 'floor_model/app_database.dart';
+import 'floor_model/app_entity.dart';
 
 class ECarbonHistory extends StatefulWidget {
   const ECarbonHistory({Key? key}) : super(key: key);
@@ -14,14 +19,42 @@ class ECarbonHistory extends StatefulWidget {
 }
 
 class _ECarbonHistoryState extends State<ECarbonHistory> {
-  // Replace these with your actual data
-  final double _currentMonthFootprint = 2.5; // Current month's carbon footprint
-  final List<FlSpot> _historicalDataSpots = [
-    FlSpot(0, 2.8),
-    FlSpot(1, 3.2),
-    FlSpot(2, 2.9),
-  ];
-  final List<double> _pastFootprints = [2.8, 3.2, 2.9, 3.1, 3.0]; // Past carbon footprints
+  double _currentMonthFootprint = 0.0;
+  List<FlSpot> _historicalDataSpots = [];
+  List<double> _pastFootprints = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  void _fetchData() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final localDb = Provider.of<AppDatabase>(context, listen: false);
+
+    final DateTime now = DateTime.now();
+    final String currentYearMonth = "${now.year}-${now.month.toString().padLeft(2, '0')}";
+
+    History? currentMonthData = await localDb.historyDao.retrieveHistoryByYearMonth(currentYearMonth, userId);
+
+    if (currentMonthData == null) {
+      currentMonthData = History(
+        yearMonth: currentYearMonth,
+        historyCarbonFootprint: 0,
+        userId: userId,
+      );
+      await localDb.historyDao.insertHistory(currentMonthData);
+    }
+
+    List<History> historyData = await localDb.historyDao.retrieveHistoriesByUid(userId);
+
+    setState(() {
+      _currentMonthFootprint = currentMonthData!.historyCarbonFootprint.toDouble();
+      _pastFootprints = historyData.map((e) => e.historyCarbonFootprint.toDouble()).toList();
+      _historicalDataSpots = historyData.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.historyCarbonFootprint.toDouble())).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

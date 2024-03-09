@@ -119,6 +119,7 @@ class SyncManager {
       int currentEcoscore = await localDatabase.personDao.retrieveEcoScore(_auth.currentUser!.uid) ?? 0;
       localDatabase.personDao.updateEcoScore(_auth.currentUser!.uid, currentEcoscore + ecoScore);
       incrementUserCloudEcoscore(ecoScore);
+      incrementMonthlyHistory(ecoScore);
     }
   }
 
@@ -131,6 +132,25 @@ class SyncManager {
       print("Function result: ${result.data}");
     } catch (e) {
       print("Error calling function: $e");
+    }
+  }
+
+  Future<void> incrementMonthlyHistory(int ecoScore) async {
+    final localDb = localDatabase;
+    final DateTime now = DateTime.now();
+    final String currentYearMonth = "${now.year}-${now.month.toString().padLeft(2, '0')}";
+
+    History? currentMonthData = await localDb.historyDao.retrieveHistoryByYearMonth(currentYearMonth, _auth.currentUser!.uid);
+
+    if (currentMonthData == null) {
+      currentMonthData = History(
+        yearMonth: currentYearMonth,
+        historyCarbonFootprint: ecoScore,
+        userId: _auth.currentUser!.uid,
+      );
+      await localDb.historyDao.insertHistory(currentMonthData);
+    } else {
+      await localDb.historyDao.updateHistoryCarbonFootprint(currentMonthData.yearMonth, _auth.currentUser!.uid, currentMonthData.historyCarbonFootprint + ecoScore);
     }
   }
 

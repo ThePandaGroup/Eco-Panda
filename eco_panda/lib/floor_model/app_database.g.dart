@@ -471,7 +471,7 @@ class _$HistoryDao extends HistoryDao {
   @override
   Future<void> updateHistoryCarbonFootprint(
     String yearMonth,
-    int userId,
+    String userId,
     int carbonFootprint,
   ) async {
     await _queryAdapter.queryNoReturn(
@@ -490,7 +490,7 @@ class _$HistoryDao extends HistoryDao {
   }
 
   @override
-  Future<List<History>> retrieveHistoriesByUserId(String userId) async {
+  Future<List<History>> retrieveHistoriesByUid(String userId) async {
     return _queryAdapter.queryList('SELECT * FROM History WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => History(
             historyId: row['historyId'] as int?,
@@ -498,6 +498,21 @@ class _$HistoryDao extends HistoryDao {
             historyCarbonFootprint: row['historyCarbonFootprint'] as int,
             userId: row['userId'] as String),
         arguments: [userId]);
+  }
+
+  @override
+  Future<History?> retrieveHistoryByYearMonth(
+    String yearMonth,
+    String userId,
+  ) async {
+    return _queryAdapter.query(
+        'SELECT * FROM History WHERE yearMonth = ?1 AND userId = ?2',
+        mapper: (Map<String, Object?> row) => History(
+            historyId: row['historyId'] as int?,
+            yearMonth: row['yearMonth'] as String,
+            historyCarbonFootprint: row['historyCarbonFootprint'] as int,
+            userId: row['userId'] as String),
+        arguments: [yearMonth, userId]);
   }
 
   @override

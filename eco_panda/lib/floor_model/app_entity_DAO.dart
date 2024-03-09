@@ -91,7 +91,7 @@ abstract class HistoryDao {
 
   // Update historyCarbonFootprint by yearMonth and userId
   @Query('UPDATE History SET historyCarbonFootprint = :carbonFootprint WHERE yearMonth = :yearMonth AND userId = :userId')
-  Future<void> updateHistoryCarbonFootprint(String yearMonth, int userId, int carbonFootprint);
+  Future<void> updateHistoryCarbonFootprint(String yearMonth, String userId, int carbonFootprint);
 
   // Retrieve all history records
   @Query('SELECT * FROM History')
@@ -99,7 +99,11 @@ abstract class HistoryDao {
 
   // Retrieve all history records by userId
   @Query('SELECT * FROM History WHERE userId = :userId')
-  Future<List<History>> retrieveHistoriesByUserId(String userId);
+  Future<List<History>> retrieveHistoriesByUid(String userId);
+
+  // Retrieve a history record by yearMonth
+  @Query('SELECT * FROM History WHERE yearMonth = :yearMonth AND userId = :userId')
+  Future<History?> retrieveHistoryByYearMonth(String yearMonth, String userId);
 
   // Sum all historyCarbonFootprint values in the History table
   @Query('SELECT COALESCE(SUM(historyCarbonFootprint), 0) FROM History')
