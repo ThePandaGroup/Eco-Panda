@@ -143,6 +143,33 @@ class _ProfileSettingState extends State<ProfileSetting> {
     );
   }
 
+  void _signOut(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Sign Out"),
+          content: const Text("Are you sure you want to sign out?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Sign Out"),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await FirebaseAuth.instance.signOut();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -197,6 +224,12 @@ class _ProfileSettingState extends State<ProfileSetting> {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () => _signOut(context),
+              icon: const Icon(Icons.logout),
+              label: const Text("Sign Out"),
             ),
           ],
         ),
