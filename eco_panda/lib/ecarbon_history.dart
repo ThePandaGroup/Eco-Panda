@@ -1,13 +1,9 @@
-// carbon history
-
 import 'dart:math';
-
 import 'package:eco_panda/page_template.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
-
 import 'floor_model/app_database.dart';
 import 'floor_model/app_entity.dart';
 
@@ -90,9 +86,9 @@ class _ECarbonHistoryState extends State<ECarbonHistory> {
                           titlesData: FlTitlesData(show: false),
                           borderData: FlBorderData(show: false),
                           minX: 0,
-                          maxX: _historicalDataSpots.length.toDouble() - 1,
-                          minY: _historicalDataSpots.map((e) => e.y).reduce(min),
-                          maxY: _historicalDataSpots.map((e) => e.y).reduce(max),
+                          maxX: _historicalDataSpots.isEmpty ? 1 : _historicalDataSpots.length.toDouble() - 1,
+                          minY: _historicalDataSpots.isEmpty ? 0 : _historicalDataSpots.map((e) => e.y).reduce(min),
+                          maxY: _historicalDataSpots.isEmpty ? 1 : _historicalDataSpots.map((e) => e.y).reduce(max),
                           lineBarsData: [
                             LineChartBarData(
                               spots: _historicalDataSpots,
