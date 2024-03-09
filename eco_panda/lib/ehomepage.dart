@@ -49,6 +49,13 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
     );
   }
 
+  Future<void> navigateAndRefresh() async {
+    await Navigator.push(context,
+      MaterialPageRoute(builder: (context) => EMapNav(selectedMode: _selectedMode)),
+    );
+    _fetchCurrentUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -134,10 +141,7 @@ class _EPandaHomepageState extends State<EPandaHomepage> {
                               ),
                               OutlinedButton(
                                 onPressed: () {
-                                  print('selected mode sent: ${_selectedMode}');
-                                  Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => EMapNav(selectedMode: _selectedMode)),
-                                  );
+                                  navigateAndRefresh();
                                 },
                                 style: OutlinedButton.styleFrom(
                                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
