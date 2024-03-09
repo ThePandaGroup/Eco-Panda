@@ -405,7 +405,7 @@ class _EMapNavState extends State<EMapNav> {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        final placeName = jsonResponse['results'][0]['formatted_address'];
+        final placeName = jsonResponse['results'][0]['formatted_address'] ?? 'unknown';
         return placeName;
       } else {
         print('Failed to retrieve place name: ${response.body}');
