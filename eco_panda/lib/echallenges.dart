@@ -1,3 +1,4 @@
+import 'package:eco_panda/sync_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,17 +27,15 @@ class _EChallengesState extends State<EChallenges> {
 
   void _retrieveAllChallenge() async {
     final database = Provider.of<AppDatabase>(context, listen: false);
-    final currChallengeList = await database.challengeDao
-        .retrieveAllChallenges();
+    final currChallengeList = await database.challengeDao.retrieveAllChallenges();
     setState(() {
       challengeList = currChallengeList;
     });
   }
 
   void _fetchCurrentUser() async {
-    final localDb = Provider.of<AppDatabase>(context, listen: false);
-    final user = await localDb.personDao.findUserByUid(
-        FirebaseAuth.instance.currentUser!.uid);
+    final database = Provider.of<AppDatabase>(context, listen: false);
+    final user = await database.personDao.findUserByUid(FirebaseAuth.instance.currentUser!.uid);
     setState(() {
       currentUser = user;
     });
@@ -44,19 +43,29 @@ class _EChallengesState extends State<EChallenges> {
   }
 
   void _fetchClaimedChallenges() async {
-    final localDb = Provider.of<AppDatabase>(context, listen: false);
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-    final claimedChallenges = await localDb.challengeStatusDao.retrieveChallengeStatusByUid(userId);
+    final database = Provider.of<AppDatabase>(context, listen: false);
+    final claimedChallenges = await database.challengeStatusDao.retrieveChallengeStatusByUid(userId);
     setState(() {
       claimedChallengesIds = Set.from(claimedChallenges.map((e) => e.challengeId));
     });
   }
 
+  void claimChallenge(Challenge challenge) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final database = Provider.of<AppDatabase>(context, listen: false);
+
+    await Provider.of<SyncManager>(context, listen: false).incrementUserEcoscore(challenge.ecoReward);
+    await database.challengeStatusDao.insertChallengeStatus(ChallengeStatus(userId: userId, challengeId: challenge.challengeId));
+
+    _fetchClaimedChallenges();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${challenge.title} completed! Reward: ${challenge.ecoReward} points')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final ecoScore = currentUser?.ecoScore ?? 0;
-    final routes = currentUser?.routes ?? 0;
-
     return SingleChildScrollView(
       child: Column(
         children: challengeList.map((challenge) {
@@ -64,22 +73,69 @@ class _EChallengesState extends State<EChallenges> {
           bool isRequirementMet;
 
           if (challenge.cType == "ecopts") {
-            currentProgress = "$ecoScore/${challenge.requirement}";
-            isRequirementMet = ecoScore >= challenge.requirement;
+            currentProgress = "${currentUser?.ecoScore}/${challenge.requirement}";
+            isRequirementMet = (currentUser?.ecoScore ?? 0) >= challenge.requirement;
           } else if (challenge.cType == "routes") {
-            currentProgress = "$routes/${challenge.requirement}";
-            isRequirementMet = routes >= challenge.requirement;
+            currentProgress = "${currentUser?.routes}/${challenge.requirement}";
+            isRequirementMet = (currentUser?.routes ?? 0) >= challenge.requirement;
           } else {
             currentProgress = "N/A";
             isRequirementMet = false;
           }
 
-          return ChallengeCard(
-            title: challenge.title,
-            description: challenge.challengeDescription,
-            currentProgress: currentProgress,
-            totalRequired: challenge.requirement,
-            isRequirementMet: isRequirementMet,
+          bool isClaimed = claimedChallengesIds.contains(challenge.challengeId);
+
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 8.0),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: const Color(0xFFF5FBE5),
+                width: 2.0,
+              ),
+              borderRadius: BorderRadius.circular(4.0),
+            ),
+            child: Card(
+              margin: EdgeInsets.zero,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              child: ListTile(
+                isThreeLine: true,
+                title: Text(
+                  challenge.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                subtitle: Text(
+                  challenge.challengeDescription,
+                  style: const TextStyle(fontSize: 12),
+                ),
+                trailing: isRequirementMet && !isClaimed
+                    ? ElevatedButton(
+                  onPressed: () => claimChallenge(challenge),
+                  child: const Text('Claim'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                  ),
+                )
+                    : Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.green, width: 2),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    isClaimed ? 'Claimed' : currentProgress,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           );
         }).toList(),
       ),
@@ -87,85 +143,86 @@ class _EChallengesState extends State<EChallenges> {
   }
 }
 
+
 // Visual Display of Challenge Card
-class ChallengeCard extends StatelessWidget {
-  final String title;
-  final String description;
-  final String currentProgress;
-  final int totalRequired;
-  final bool isRequirementMet;
-  final bool isClaimed;
-
-  const ChallengeCard({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.currentProgress,
-    required this.totalRequired,
-    this.isRequirementMet = false,
-    this.isClaimed = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: const Color(0xFFF5FBE5),
-          width: 2.0,
-        ),
-        borderRadius: BorderRadius.circular(4.0),
-      ),
-      child: Card(
-        margin: EdgeInsets.zero,
-        color: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        child: ListTile(
-          isThreeLine: true,
-          title: Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          subtitle: Text(
-            description,
-            style: const TextStyle(fontSize: 12),
-          ),
-          trailing: isRequirementMet
-              ? ElevatedButton(
-                  onPressed: () {
-                    // Handle claim logic here
-                  },
-                  child: Text('Claim'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                  ),
-                )
-              : Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.green, width: 2),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: isClaimed
-                  ? Text('Claimed', style: TextStyle(color: Colors.grey))
-                  : Text(currentProgress,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                ),
-        ),
-      ),
-    );
-  }
-}
-
+// class ChallengeCard extends StatelessWidget {
+//   final String title;
+//   final String description;
+//   final String currentProgress;
+//   final int totalRequired;
+//   final bool isRequirementMet;
+//   final bool isClaimed;
+//
+//   const ChallengeCard({
+//     super.key,
+//     required this.title,
+//     required this.description,
+//     required this.currentProgress,
+//     required this.totalRequired,
+//     this.isRequirementMet = false,
+//     this.isClaimed = false,
+//   });
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       margin: const EdgeInsets.symmetric(vertical: 8.0),
+//       decoration: BoxDecoration(
+//         border: Border.all(
+//           color: const Color(0xFFF5FBE5),
+//           width: 2.0,
+//         ),
+//         borderRadius: BorderRadius.circular(4.0),
+//       ),
+//       child: Card(
+//         margin: EdgeInsets.zero,
+//         color: Colors.white,
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(4.0),
+//         ),
+//         child: ListTile(
+//           isThreeLine: true,
+//           title: Text(
+//             title,
+//             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+//           ),
+//           subtitle: Text(
+//             description,
+//             style: const TextStyle(fontSize: 12),
+//           ),
+//           trailing: isRequirementMet
+//               ? ElevatedButton(
+//                   onPressed: () {
+//                     // Handle claim logic here
+//                   },
+//                   child: Text('Claim'),
+//                   style: ElevatedButton.styleFrom(
+//                     backgroundColor: Colors.green,
+//                     foregroundColor: Colors.white,
+//                   ),
+//                 )
+//               : Container(
+//                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+//                   decoration: BoxDecoration(
+//                     border: Border.all(color: Colors.green, width: 2),
+//                     borderRadius: BorderRadius.circular(4),
+//                   ),
+//                   child: isClaimed
+//                   ? Text('Claimed', style: TextStyle(color: Colors.grey))
+//                   : Text(currentProgress,
+//                       style: const TextStyle(
+//                         fontSize: 12,
+//                         fontWeight: FontWeight.bold,
+//                         color: Colors.green,
+//                       ),
+//                     ),
+//                 ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+//
 
 /*
 class ClaimButton extends StatelessWidget {
