@@ -9,6 +9,7 @@ class Person{
   String username;
   final String picPath;
   final int ecoScore;
+  final int routes;
   final int? rank;
 
   Person({
@@ -16,32 +17,44 @@ class Person{
     required this.username,
     required this.picPath,
     required this.ecoScore,
+    required this.routes,
     this.rank
   });
 }
 
 @Entity(tableName:"Challenge")
 class Challenge{
-  @PrimaryKey(autoGenerate: true)
-  final int? challengeId;
+  @primaryKey
+  final String challengeId;
 
   final String title;
   final String challengeDescription;
   final int ecoReward;
   final int requirement;
-  final int progress;
-  final String userId;
   final String cType;
 
   Challenge({
-    this.challengeId,
+    required this.challengeId,
     required this.title,
     required this.challengeDescription,
     required this.ecoReward,
     required this.requirement,
-    required this.progress,
     required this.cType,
-    required this.userId
+  });
+}
+
+@Entity(tableName: "ChallengeStatus")
+class ChallengeStatus{
+  @PrimaryKey(autoGenerate: true)
+  final int? challengeStatusId;
+
+  final String userId;
+  final String challengeId;
+
+  ChallengeStatus({
+    this.challengeStatusId,
+    required this.userId,
+    required this.challengeId,
   });
 }
 
@@ -83,22 +96,3 @@ class Destination{
     required this. carbonFootprintScore
   });
 }
-
-@Entity(tableName: "Setting")
-class Setting{
-  @primaryKey
-  final String settingType;
-
-  final bool on;
-  final String userId;
-
-  Setting({
-    required this.settingType,
-    required this.on,
-    required this.userId
-  });
-}
-
-
-
-

@@ -14,68 +14,87 @@ class EChallenges extends StatefulWidget {
 // Change things in here for the page
 class _EChallengesState extends State<EChallenges> {
   List<Challenge> challengeList = [];
+  Person? currentUser;
+  Set<String> claimedChallengesIds = Set();
+
   @override
   void initState() {
     super.initState();
     _retrieveAllChallenge();
+    _fetchCurrentUser();
   }
-  void _retrieveAllChallenge() async{
+
+  void _retrieveAllChallenge() async {
     final database = Provider.of<AppDatabase>(context, listen: false);
-    final currChallengeList = await database.challengeDao.retrieveAllChallenges();
+    final currChallengeList = await database.challengeDao
+        .retrieveAllChallenges();
     setState(() {
       challengeList = currChallengeList;
     });
   }
 
-  /*
-  Future<String?> _retrieveProgress(Challenge challenge) async{
-    final database = Provider.of<AppDatabase>(context, listen: false);
-    String co = "CO";
-    String ecoS = "ecopts";
-    String userID = FirebaseAuth.instance.currentUser!.uid;
-    String result = "NONE";
-    final int requirement = challenge.requirement;
-    if(challenge.cType == co){
-      final progress = await database.personDao.retrieveEcoScore(userID);
-      var calculation = (progress!/requirement);
-      result = "${calculation}%";
-      return result;
-    }else if (challenge.cType == ecoS){
-      final progress = await database.historyDao.sumHistoryCarbonFootprint();
-      var calculation = (progress!/requirement);
-      result = "${calculation}%";
-      return result;
-    }else{
-      return result;
-    }
+  void _fetchCurrentUser() async {
+    final localDb = Provider.of<AppDatabase>(context, listen: false);
+    final user = await localDb.personDao.findUserByUid(
+        FirebaseAuth.instance.currentUser!.uid);
+    setState(() {
+      currentUser = user;
+    });
+    _fetchClaimedChallenges();
   }
-   */
+
+  void _fetchClaimedChallenges() async {
+    final localDb = Provider.of<AppDatabase>(context, listen: false);
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final claimedChallenges = await localDb.challengeStatusDao.retrieveChallengeStatusByUid(userId);
+    setState(() {
+      claimedChallengesIds = Set.from(claimedChallenges.map((e) => e.challengeId));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final ecoScore = currentUser?.ecoScore ?? 0;
+    final routes = currentUser?.routes ?? 0;
+
     return SingleChildScrollView(
-          child: Column(
-            children: challengeList.asMap().entries.map((mapEntry) {
-              int index = mapEntry.key;
-              Challenge entry = mapEntry.value;
-              return
-                ChallengeCard(
-                    title: entry.title,
-                    description: entry.challengeDescription,
-                    currentProgress: "${entry.progress}/${entry.requirement}",
-                    totalRequired: entry.requirement);
-            }).toList(),
-          ),
-        );
+      child: Column(
+        children: challengeList.map((challenge) {
+          String currentProgress;
+          bool isRequirementMet;
+
+          if (challenge.cType == "ecopts") {
+            currentProgress = "$ecoScore/${challenge.requirement}";
+            isRequirementMet = ecoScore >= challenge.requirement;
+          } else if (challenge.cType == "routes") {
+            currentProgress = "$routes/${challenge.requirement}";
+            isRequirementMet = routes >= challenge.requirement;
+          } else {
+            currentProgress = "N/A";
+            isRequirementMet = false;
+          }
+
+          return ChallengeCard(
+            title: challenge.title,
+            description: challenge.challengeDescription,
+            currentProgress: currentProgress,
+            totalRequired: challenge.requirement,
+            isRequirementMet: isRequirementMet,
+          );
+        }).toList(),
+      ),
+    );
   }
 }
 
 // Visual Display of Challenge Card
 class ChallengeCard extends StatelessWidget {
-  final String title ;
-  final String description ;
+  final String title;
+  final String description;
   final String currentProgress;
   final int totalRequired;
+  final bool isRequirementMet;
+  final bool isClaimed;
 
   const ChallengeCard({
     super.key,
@@ -83,6 +102,8 @@ class ChallengeCard extends StatelessWidget {
     required this.description,
     required this.currentProgress,
     required this.totalRequired,
+    this.isRequirementMet = false,
+    this.isClaimed = false,
   });
 
   @override
@@ -104,50 +125,47 @@ class ChallengeCard extends StatelessWidget {
         ),
         child: ListTile(
           isThreeLine: true,
-          title: Text(title,
+          title: Text(
+            title,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
-          subtitle: Text(description,
+          subtitle: Text(
+            description,
             style: const TextStyle(fontSize: 12),
           ),
-          trailing: ChallengeProgressIndicator(
-            currentProgress: currentProgress,
-          ),
+          trailing: isRequirementMet
+              ? ElevatedButton(
+                  onPressed: () {
+                    // Handle claim logic here
+                  },
+                  child: Text('Claim'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                  ),
+                )
+              : Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.green, width: 2),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: isClaimed
+                  ? Text('Claimed', style: TextStyle(color: Colors.grey))
+                  : Text(currentProgress,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                ),
         ),
       ),
     );
   }
 }
 
-
-// Challenge progress indicator
-class ChallengeProgressIndicator extends StatelessWidget {
-  final String currentProgress;
-
-  const ChallengeProgressIndicator({
-    super.key,
-    required this.currentProgress
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.green, width: 2.0),
-        borderRadius: BorderRadius.circular(4.0),
-      ),
-      child: Text(
-        "$currentProgress",
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: Colors.green,
-        ),
-      ),
-    );
-  }
-}
 
 /*
 class ClaimButton extends StatelessWidget {

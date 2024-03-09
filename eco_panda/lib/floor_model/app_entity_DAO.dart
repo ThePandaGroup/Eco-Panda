@@ -24,11 +24,17 @@ abstract class PersonDao {
   @Query("UPDATE Person SET username = :username WHERE userId = :userId")
   Future<void> updateUsername(String userId, String username);
 
+  @Query("UPDATE Person SET routes = :newRoute WHERE userId = :userId")
+  Future<void> updateRoute(String userId, int newRoute);
+
   @Query('SELECT picPath FROM Person WHERE userId = :userId')
   Future<String?> retrievePicPath(String userId);
 
   @Query('SELECT ecoScore FROM Person WHERE userId = :userId')
   Future<int?> retrieveEcoScore(String userId);
+
+  @Query('SELECT routes FROM Person WHERE userId = :userId')
+  Future<int?> retrieveRoute(String userId);
 
   @delete
   Future<int?>removeUser(Person user);
@@ -45,27 +51,32 @@ abstract class ChallengeDao {
   @Query('SELECT * FROM Challenge')
   Future<List<Challenge>> retrieveAllChallenges();
 
-  @Query('SELECT * FROM Challenge WHERE userId = :uid')
-  Future<List<Challenge>> findChallengesByUid(String uid);
-
   // Retrieve a challenge by challengeId
   @Query('SELECT * FROM Challenge WHERE challengeId = :challengeId')
-  Future<Challenge?> retrieveChallengeById(int challengeId);
+  Future<Challenge?> retrieveChallengeById(String challengeId);
 
-  // Retrieve challenges based on userId
-  @Query('SELECT * FROM Challenge WHERE userId = :userId')
-  Future<List<Challenge>> retrieveChallengesByUserId(String userId);
-
-  // Update ecoReward by challengeId
-  @Query('UPDATE Challenge SET ecoReward = :ecoReward WHERE challengeId = :challengeId')
-  Future<void> updateEcoReward(int challengeId, int ecoReward);
-
-  // Update progress by challengeId and userId (assuming challengeId is unique and sufficient to identify a challenge, the userId condition may be redundant, but included as per request)
-  @Query('UPDATE Challenge SET progress = :progress WHERE challengeId = :challengeId AND userId = :userId')
-  Future<void> updateProgress(int challengeId, String userId, int progress);
+  @Query('DELETE FROM Challenge')
+  Future<void> deleteAllChallenges();
 
   @delete
   Future<int?>removeChallenge(Challenge challenge);
+}
+
+@dao
+abstract class ChallengeStatusDao {
+  @insert
+  Future<void> insertChallengeStatus(ChallengeStatus challengeStatus);
+
+  // Retrieve all challenge statuses
+  @Query('SELECT * FROM ChallengeStatus')
+  Future<List<ChallengeStatus>> retrieveAllChallengeStatuses();
+
+  // Retrieve a challenge status by userId
+  @Query('SELECT * FROM ChallengeStatus WHERE userId = :userId')
+  Future<List<ChallengeStatus>> retrieveChallengeStatusByUid(String userId);
+
+  @delete
+  Future<void> deleteChallengeStatus(ChallengeStatus challengeStatus);
 }
 
 @dao
@@ -113,23 +124,4 @@ abstract class DestinationDao {
   // Delete a destination
   @delete
   Future<void> deleteDestination(Destination destination);
-}
-
-@dao
-abstract class SettingDao {
-  // Insert a new setting or replace an existing one
-  @insert
-  Future<void> insertSetting(Setting setting);
-
-  // Retrieve a setting by settingType
-  @Query('SELECT * FROM Setting WHERE settingType = :settingType')
-  Future<Setting?> retrieveSettingByType(String settingType);
-
-  // Retrieve all settings by userId
-  @Query('SELECT * FROM Setting WHERE userId = :userId')
-  Future<List<Setting>> retrieveSettingsByUid(String userId);
-
-  // Delete a setting
-  @delete
-  Future<void> deleteSetting(Setting setting);
 }

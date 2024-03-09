@@ -54,12 +54,10 @@ class _ProfileSettingState extends State<ProfileSetting> {
   void _fetchCurrentUser() async {
     final localDb = Provider.of<AppDatabase>(context, listen: false);
     final user = await localDb.personDao.findUserByUid(FirebaseAuth.instance.currentUser!.uid);
-    if (mounted) {
-      setState(() {
-        _nameController.text = user?.username ?? "N/A";
-        currentAvatar = user?.picPath ?? 'assets/avatar.png';
-      });
-    }
+    setState(() {
+      _nameController.text = user?.username ?? "N/A";
+      currentAvatar = user?.picPath ?? 'assets/avatar.png';
+    });
   }
 
   void _saveProfileName() async {
@@ -267,7 +265,7 @@ class _RecentDestinationHistoryState extends State<RecentDestinationHistory> {
               return ListTile(
                 leading: Icon(Icons.location_pin),
                 title: Text(destination.address),
-                subtitle: Text("Carbon Footprint: ${destination.carbonFootprintScore}"),
+                subtitle: Text("Earned Eco Score: ${destination.carbonFootprintScore}"),
                 trailing: IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () => _deleteDestination(destination),

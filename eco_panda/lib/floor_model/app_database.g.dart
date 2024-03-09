@@ -65,11 +65,11 @@ class _$AppDatabase extends AppDatabase {
 
   ChallengeDao? _challengeDaoInstance;
 
+  ChallengeStatusDao? _challengeStatusDaoInstance;
+
   HistoryDao? _historyDaoInstance;
 
   DestinationDao? _destinationDaoInstance;
-
-  SettingDao? _settingDaoInstance;
 
   Future<sqflite.Database> open(
     String path,
@@ -93,15 +93,15 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Person` (`userId` TEXT NOT NULL, `username` TEXT NOT NULL, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, `rank` INTEGER, PRIMARY KEY (`userId`))');
+            'CREATE TABLE IF NOT EXISTS `Person` (`userId` TEXT NOT NULL, `username` TEXT NOT NULL, `picPath` TEXT NOT NULL, `ecoScore` INTEGER NOT NULL, `routes` INTEGER NOT NULL, `rank` INTEGER, PRIMARY KEY (`userId`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `requirement` INTEGER NOT NULL, `progress` INTEGER NOT NULL, `userId` TEXT NOT NULL, `cType` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Challenge` (`challengeId` TEXT NOT NULL, `title` TEXT NOT NULL, `challengeDescription` TEXT NOT NULL, `ecoReward` INTEGER NOT NULL, `requirement` INTEGER NOT NULL, `cType` TEXT NOT NULL, PRIMARY KEY (`challengeId`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `ChallengeStatus` (`challengeStatusId` INTEGER PRIMARY KEY AUTOINCREMENT, `userId` TEXT NOT NULL, `challengeId` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `History` (`historyId` INTEGER PRIMARY KEY AUTOINCREMENT, `yearMonth` TEXT NOT NULL, `historyCarbonFootprint` INTEGER NOT NULL, `userId` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Destination` (`destinationId` INTEGER PRIMARY KEY AUTOINCREMENT, `userId` TEXT NOT NULL, `address` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `carbonFootprintScore` INTEGER NOT NULL)');
-        await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Setting` (`settingType` TEXT NOT NULL, `on` INTEGER NOT NULL, `userId` TEXT NOT NULL, PRIMARY KEY (`settingType`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -120,6 +120,12 @@ class _$AppDatabase extends AppDatabase {
   }
 
   @override
+  ChallengeStatusDao get challengeStatusDao {
+    return _challengeStatusDaoInstance ??=
+        _$ChallengeStatusDao(database, changeListener);
+  }
+
+  @override
   HistoryDao get historyDao {
     return _historyDaoInstance ??= _$HistoryDao(database, changeListener);
   }
@@ -128,11 +134,6 @@ class _$AppDatabase extends AppDatabase {
   DestinationDao get destinationDao {
     return _destinationDaoInstance ??=
         _$DestinationDao(database, changeListener);
-  }
-
-  @override
-  SettingDao get settingDao {
-    return _settingDaoInstance ??= _$SettingDao(database, changeListener);
   }
 }
 
@@ -149,6 +150,7 @@ class _$PersonDao extends PersonDao {
                   'username': item.username,
                   'picPath': item.picPath,
                   'ecoScore': item.ecoScore,
+                  'routes': item.routes,
                   'rank': item.rank
                 }),
         _personDeletionAdapter = DeletionAdapter(
@@ -160,6 +162,7 @@ class _$PersonDao extends PersonDao {
                   'username': item.username,
                   'picPath': item.picPath,
                   'ecoScore': item.ecoScore,
+                  'routes': item.routes,
                   'rank': item.rank
                 });
 
@@ -181,6 +184,7 @@ class _$PersonDao extends PersonDao {
             username: row['username'] as String,
             picPath: row['picPath'] as String,
             ecoScore: row['ecoScore'] as int,
+            routes: row['routes'] as int,
             rank: row['rank'] as int?));
   }
 
@@ -192,6 +196,7 @@ class _$PersonDao extends PersonDao {
             username: row['username'] as String,
             picPath: row['picPath'] as String,
             ecoScore: row['ecoScore'] as int,
+            routes: row['routes'] as int,
             rank: row['rank'] as int?),
         arguments: [uid]);
   }
@@ -237,6 +242,16 @@ class _$PersonDao extends PersonDao {
   }
 
   @override
+  Future<void> updateRoute(
+    String userId,
+    int newRoute,
+  ) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE Person SET routes = ?2 WHERE userId = ?1',
+        arguments: [userId, newRoute]);
+  }
+
+  @override
   Future<String?> retrievePicPath(String userId) async {
     return _queryAdapter.query('SELECT picPath FROM Person WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => row.values.first as String,
@@ -246,6 +261,13 @@ class _$PersonDao extends PersonDao {
   @override
   Future<int?> retrieveEcoScore(String userId) async {
     return _queryAdapter.query('SELECT ecoScore FROM Person WHERE userId = ?1',
+        mapper: (Map<String, Object?> row) => row.values.first as int,
+        arguments: [userId]);
+  }
+
+  @override
+  Future<int?> retrieveRoute(String userId) async {
+    return _queryAdapter.query('SELECT routes FROM Person WHERE userId = ?1',
         mapper: (Map<String, Object?> row) => row.values.first as int,
         arguments: [userId]);
   }
@@ -275,8 +297,6 @@ class _$ChallengeDao extends ChallengeDao {
                   'challengeDescription': item.challengeDescription,
                   'ecoReward': item.ecoReward,
                   'requirement': item.requirement,
-                  'progress': item.progress,
-                  'userId': item.userId,
                   'cType': item.cType
                 }),
         _challengeDeletionAdapter = DeletionAdapter(
@@ -289,8 +309,6 @@ class _$ChallengeDao extends ChallengeDao {
                   'challengeDescription': item.challengeDescription,
                   'ecoReward': item.ecoReward,
                   'requirement': item.requirement,
-                  'progress': item.progress,
-                  'userId': item.userId,
                   'cType': item.cType
                 });
 
@@ -308,80 +326,30 @@ class _$ChallengeDao extends ChallengeDao {
   Future<List<Challenge>> retrieveAllChallenges() async {
     return _queryAdapter.queryList('SELECT * FROM Challenge',
         mapper: (Map<String, Object?> row) => Challenge(
-            challengeId: row['challengeId'] as int?,
+            challengeId: row['challengeId'] as String,
             title: row['title'] as String,
             challengeDescription: row['challengeDescription'] as String,
             ecoReward: row['ecoReward'] as int,
             requirement: row['requirement'] as int,
-            progress: row['progress'] as int,
-            cType: row['cType'] as String,
-            userId: row['userId'] as String));
+            cType: row['cType'] as String));
   }
 
   @override
-  Future<List<Challenge>> findChallengesByUid(String uid) async {
-    return _queryAdapter.queryList('SELECT * FROM Challenge WHERE userId = ?1',
-        mapper: (Map<String, Object?> row) => Challenge(
-            challengeId: row['challengeId'] as int?,
-            title: row['title'] as String,
-            challengeDescription: row['challengeDescription'] as String,
-            ecoReward: row['ecoReward'] as int,
-            requirement: row['requirement'] as int,
-            progress: row['progress'] as int,
-            cType: row['cType'] as String,
-            userId: row['userId'] as String),
-        arguments: [uid]);
-  }
-
-  @override
-  Future<Challenge?> retrieveChallengeById(int challengeId) async {
+  Future<Challenge?> retrieveChallengeById(String challengeId) async {
     return _queryAdapter.query('SELECT * FROM Challenge WHERE challengeId = ?1',
         mapper: (Map<String, Object?> row) => Challenge(
-            challengeId: row['challengeId'] as int?,
+            challengeId: row['challengeId'] as String,
             title: row['title'] as String,
             challengeDescription: row['challengeDescription'] as String,
             ecoReward: row['ecoReward'] as int,
             requirement: row['requirement'] as int,
-            progress: row['progress'] as int,
-            cType: row['cType'] as String,
-            userId: row['userId'] as String),
+            cType: row['cType'] as String),
         arguments: [challengeId]);
   }
 
   @override
-  Future<List<Challenge>> retrieveChallengesByUserId(String userId) async {
-    return _queryAdapter.queryList('SELECT * FROM Challenge WHERE userId = ?1',
-        mapper: (Map<String, Object?> row) => Challenge(
-            challengeId: row['challengeId'] as int?,
-            title: row['title'] as String,
-            challengeDescription: row['challengeDescription'] as String,
-            ecoReward: row['ecoReward'] as int,
-            requirement: row['requirement'] as int,
-            progress: row['progress'] as int,
-            cType: row['cType'] as String,
-            userId: row['userId'] as String),
-        arguments: [userId]);
-  }
-
-  @override
-  Future<void> updateEcoReward(
-    int challengeId,
-    int ecoReward,
-  ) async {
-    await _queryAdapter.queryNoReturn(
-        'UPDATE Challenge SET ecoReward = ?2 WHERE challengeId = ?1',
-        arguments: [challengeId, ecoReward]);
-  }
-
-  @override
-  Future<void> updateProgress(
-    int challengeId,
-    String userId,
-    int progress,
-  ) async {
-    await _queryAdapter.queryNoReturn(
-        'UPDATE Challenge SET progress = ?3 WHERE challengeId = ?1 AND userId = ?2',
-        arguments: [challengeId, userId, progress]);
+  Future<void> deleteAllChallenges() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM Challenge');
   }
 
   @override
@@ -393,6 +361,72 @@ class _$ChallengeDao extends ChallengeDao {
   @override
   Future<int> removeChallenge(Challenge challenge) {
     return _challengeDeletionAdapter.deleteAndReturnChangedRows(challenge);
+  }
+}
+
+class _$ChallengeStatusDao extends ChallengeStatusDao {
+  _$ChallengeStatusDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _challengeStatusInsertionAdapter = InsertionAdapter(
+            database,
+            'ChallengeStatus',
+            (ChallengeStatus item) => <String, Object?>{
+                  'challengeStatusId': item.challengeStatusId,
+                  'userId': item.userId,
+                  'challengeId': item.challengeId
+                }),
+        _challengeStatusDeletionAdapter = DeletionAdapter(
+            database,
+            'ChallengeStatus',
+            ['challengeStatusId'],
+            (ChallengeStatus item) => <String, Object?>{
+                  'challengeStatusId': item.challengeStatusId,
+                  'userId': item.userId,
+                  'challengeId': item.challengeId
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<ChallengeStatus> _challengeStatusInsertionAdapter;
+
+  final DeletionAdapter<ChallengeStatus> _challengeStatusDeletionAdapter;
+
+  @override
+  Future<List<ChallengeStatus>> retrieveAllChallengeStatuses() async {
+    return _queryAdapter.queryList('SELECT * FROM ChallengeStatus',
+        mapper: (Map<String, Object?> row) => ChallengeStatus(
+            challengeStatusId: row['challengeStatusId'] as int?,
+            userId: row['userId'] as String,
+            challengeId: row['challengeId'] as String));
+  }
+
+  @override
+  Future<List<ChallengeStatus>> retrieveChallengeStatusByUid(
+      String userId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM ChallengeStatus WHERE userId = ?1',
+        mapper: (Map<String, Object?> row) => ChallengeStatus(
+            challengeStatusId: row['challengeStatusId'] as int?,
+            userId: row['userId'] as String,
+            challengeId: row['challengeId'] as String),
+        arguments: [userId]);
+  }
+
+  @override
+  Future<void> insertChallengeStatus(ChallengeStatus challengeStatus) async {
+    await _challengeStatusInsertionAdapter.insert(
+        challengeStatus, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteChallengeStatus(ChallengeStatus challengeStatus) async {
+    await _challengeStatusDeletionAdapter.delete(challengeStatus);
   }
 }
 
@@ -553,69 +587,5 @@ class _$DestinationDao extends DestinationDao {
   @override
   Future<void> deleteDestination(Destination destination) async {
     await _destinationDeletionAdapter.delete(destination);
-  }
-}
-
-class _$SettingDao extends SettingDao {
-  _$SettingDao(
-    this.database,
-    this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
-        _settingInsertionAdapter = InsertionAdapter(
-            database,
-            'Setting',
-            (Setting item) => <String, Object?>{
-                  'settingType': item.settingType,
-                  'on': item.on ? 1 : 0,
-                  'userId': item.userId
-                }),
-        _settingDeletionAdapter = DeletionAdapter(
-            database,
-            'Setting',
-            ['settingType'],
-            (Setting item) => <String, Object?>{
-                  'settingType': item.settingType,
-                  'on': item.on ? 1 : 0,
-                  'userId': item.userId
-                });
-
-  final sqflite.DatabaseExecutor database;
-
-  final StreamController<String> changeListener;
-
-  final QueryAdapter _queryAdapter;
-
-  final InsertionAdapter<Setting> _settingInsertionAdapter;
-
-  final DeletionAdapter<Setting> _settingDeletionAdapter;
-
-  @override
-  Future<Setting?> retrieveSettingByType(String settingType) async {
-    return _queryAdapter.query('SELECT * FROM Setting WHERE settingType = ?1',
-        mapper: (Map<String, Object?> row) => Setting(
-            settingType: row['settingType'] as String,
-            on: (row['on'] as int) != 0,
-            userId: row['userId'] as String),
-        arguments: [settingType]);
-  }
-
-  @override
-  Future<List<Setting>> retrieveSettingsByUid(String userId) async {
-    return _queryAdapter.queryList('SELECT * FROM Setting WHERE userId = ?1',
-        mapper: (Map<String, Object?> row) => Setting(
-            settingType: row['settingType'] as String,
-            on: (row['on'] as int) != 0,
-            userId: row['userId'] as String),
-        arguments: [userId]);
-  }
-
-  @override
-  Future<void> insertSetting(Setting setting) async {
-    await _settingInsertionAdapter.insert(setting, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> deleteSetting(Setting setting) async {
-    await _settingDeletionAdapter.delete(setting);
   }
 }

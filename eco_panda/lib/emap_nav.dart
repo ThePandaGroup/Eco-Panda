@@ -355,13 +355,12 @@ class _EMapNavState extends State<EMapNav> {
     );
 
     await addDestination(newDestination);
-    await Provider.of<SyncManager>(context, listen: false).incrementUserEcoscore(earnedCarbonPts);
-
     resetState();
   }
 
   void resetState() async {
     final currentPosition = await Geolocator.getCurrentPosition();
+    final ecoScoreEarned = earnedCarbonPts;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -395,6 +394,8 @@ class _EMapNavState extends State<EMapNav> {
         );
       },
     );
+    await Provider.of<SyncManager>(context, listen: false).incrementUserEcoscore(ecoScoreEarned);
+    await Provider.of<SyncManager>(context, listen: false).incrementUserRoute();
   }
 
   Future<String> getPlaceName() async {

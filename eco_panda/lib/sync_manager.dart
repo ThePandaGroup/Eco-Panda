@@ -25,6 +25,7 @@ class SyncManager {
     final user = await localDatabase.personDao.findUserByUid(_auth.currentUser!.uid);
     int ecoScore = user?.ecoScore ?? 0;
     String username = user?.username ?? 'user_${math.Random().nextInt(99999)}';
+    int routes = user?.routes ?? 0;
 
     if (user == null) {
       await localDatabase.personDao.insertUser(Person(
@@ -32,32 +33,36 @@ class SyncManager {
         username: username,
         picPath: 'assets/avatar.png',
         ecoScore: 0,
+        routes: 0
       ));
     }
 
-    int updatedEcoScore = await syncCloudUsers(ecoScore, username);
-    if (ecoScore != updatedEcoScore) {
-      localDatabase.personDao.updateEcoScore(_auth.currentUser!.uid, updatedEcoScore);
+    final updatedData = await syncCloudUsers(ecoScore, username, routes);
+    localDatabase.personDao.updateUsername(_auth.currentUser!.uid, updatedData['username']);
+    if (ecoScore != updatedData['ecoScore']) {
+      localDatabase.personDao.updateEcoScore(_auth.currentUser!.uid, updatedData['ecoScore']);
+    }
+    if (routes != updatedData['routes']) {
+      localDatabase.personDao.updateRoute(_auth.currentUser!.uid, updatedData['routes']);
     }
   }
 
-  Future<int> syncCloudUsers(int ecoScore, String username) async {
+  Future<Map<String, dynamic>> syncCloudUsers(int ecoScore, String username, int routes) async {
     HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('syncUserState');
     try {
       final result = await callable.call(<String, dynamic>{
         'ecoScore': ecoScore,
         'username': username,
+        'routes': routes,
       });
-      final int updatedEcoScore = result.data['ecoScore'];
       print("Successfully synced ecoScore. Result: ${result.data}");
-      localDatabase.personDao.updateUsername(_auth.currentUser!.uid, username);
-      return updatedEcoScore;
+      return result.data;
     } on FirebaseFunctionsException catch (e) {
       print("Failed to sync ecoScore: ${e.code} - ${e.message}");
     } catch (e) {
       print("An error occurred: $e");
     }
-    return ecoScore;
+    return {'ecoScore': ecoScore, 'routes': routes};
   }
 
   Future<void> syncUserRank() async {
@@ -81,27 +86,30 @@ class SyncManager {
   }
 
   Future<void> syncChallenges() async {
-    final existingChallenges = await localDatabase.challengeDao.findChallengesByUid(_auth.currentUser!.uid);
-    if (existingChallenges.isNotEmpty) return;
+    final firestore = FirebaseFirestore.instance;
+    final snapshot = await firestore.collection('challenges').get();
 
-    final challengesSnapshot = await FirebaseFirestore.instance.collection('challenges').get();
+    List<Challenge> challenges = snapshot.docs.map((doc) {
+      return Challenge(
+        challengeId: doc.id,
+        title: doc.data()['title'] ?? '',
+        challengeDescription: doc.data()['description'] ?? '',
+        ecoReward: doc.data()['reward'] ?? 0,
+        requirement: doc.data()['required'] ?? 0,
+        cType: doc.data()['cType'] ?? '',
+      );
+    }).toList();
 
-    final List<Challenge> challengesToInsert = [];
-    for (final doc in challengesSnapshot.docs) {
-      final data = doc.data();
-      challengesToInsert.add(Challenge(
-        title: data['title'] ?? '',
-        challengeDescription: data['description'] ?? '',
-        ecoReward: data['reward'] ?? 0,
-        requirement: data['required'] ?? 0,
-        progress: 0,
-        cType: data['cType'] ?? '',
-        userId: _auth.currentUser!.uid,
-      ));
-    }
+    await refreshChallenges(challenges);
+  }
 
-    for (final challenge in challengesToInsert) {
-      await localDatabase.challengeDao.insertChallenge(challenge);
+  Future<void> refreshChallenges(List<Challenge> newChallenges) async {
+    final challengeDao = localDatabase.challengeDao;
+
+    await challengeDao.deleteAllChallenges();
+
+    for (var challenge in newChallenges) {
+      await challengeDao.insertChallenge(challenge);
     }
   }
 
@@ -117,9 +125,28 @@ class SyncManager {
   Future<void> incrementUserCloudEcoscore(int ecoScore) async {
     FirebaseFunctions functions = FirebaseFunctions.instance;
     try {
-      final HttpsCallableResult result = await functions.httpsCallable('updateUserPoints').call({
+      final HttpsCallableResult result = await functions.httpsCallable('updateUserEcoScore').call({
         'ecoScore': ecoScore,
       });
+      print("Function result: ${result.data}");
+    } catch (e) {
+      print("Error calling function: $e");
+    }
+  }
+
+  Future<void> incrementUserRoute() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      int currentRoutes = await localDatabase.personDao.retrieveRoute(_auth.currentUser!.uid) ?? 0;
+      localDatabase.personDao.updateRoute(_auth.currentUser!.uid, currentRoutes + 1);
+      incrementUserCloudRoute();
+    }
+  }
+
+  Future<void> incrementUserCloudRoute() async {
+    FirebaseFunctions functions = FirebaseFunctions.instance;
+    try {
+      final HttpsCallableResult result = await functions.httpsCallable('incrementUserRoute').call();
       print("Function result: ${result.data}");
     } catch (e) {
       print("Error calling function: $e");

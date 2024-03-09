@@ -9,27 +9,24 @@ exports.syncUserState = functions.https.onCall(async (data, context) => {
   }
 
   const userId = context.auth.uid;
-  const newEcoScore = data.ecoScore;
-  const newUsername = data.username;
-  const usersCollection = admin.firestore().collection("users");
-  const userDocRef = usersCollection.doc(userId);
+  const {ecoScore, username, routes} = data;
+
+  const userDocRef = admin.firestore().collection("users").doc(userId);
 
   try {
     const doc = await userDocRef.get();
     if (!doc.exists) {
       await userDocRef.set({
-        username: newUsername,
-        ecoScore: newEcoScore,
+        username: username,
+        ecoScore: ecoScore,
+        routes: routes,
       });
-      return {ecoScore: newEcoScore};
+      return {ecoScore: ecoScore, username: username, routes: routes};
     } else {
-      const currentEcoScore = doc.data().ecoScore || 0;
-      if (newEcoScore > currentEcoScore) {
-        await userDocRef.update({ecoScore: newEcoScore});
-        return {ecoScore: newEcoScore};
-      } else {
-        return {ecoScore: currentEcoScore};
-      }
+      return {
+        ecoScore: doc.data().ecoScore,
+        username: doc.data().username,
+        routes: doc.data().routes};
     }
   } catch (error) {
     console.error("Error syncing user ecoScore:", error);
@@ -76,6 +73,27 @@ exports.updateUsername = functions.https.onCall(async (data, context) => {
     console.error("Error updating username:", error);
     throw new functions.https.HttpsError("internal", "Fail to update username");
   }
+});
+
+exports.incrementUserRoute = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError("no access", "Unauthenticated user");
+  }
+
+  const userId = context.auth.uid;
+  const userRef = admin.firestore().collection("users").doc(userId);
+  const userDoc = await userRef.get();
+
+  if (!userDoc.exists) {
+    console.error("User document not found");
+    throw new functions.https.HttpsError("not-found", "User doc not found.");
+  }
+
+  await userRef.update({
+    routes: admin.firestore.FieldValue.increment(1),
+  });
+
+  return {success: true, message: "Routes number updated successfully"};
 });
 
 exports.getUserRank = functions.https.onCall(async (data, context) => {
