@@ -264,7 +264,7 @@ class _RecentDestinationHistoryState extends State<RecentDestinationHistory> {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     final destinations = await Provider.of<AppDatabase>(context, listen: false).destinationDao.retrieveDestinationsByUid(userId);
     setState(() {
-      _recentDestinations = List.from(destinations.reversed);
+      _recentDestinations = List.from(destinations.reversed.take(2));
     });
   }
 
@@ -304,7 +304,7 @@ class _RecentDestinationHistoryState extends State<RecentDestinationHistory> {
           );
         },
       ),
-    )
+      ),
 
       ],
     );
