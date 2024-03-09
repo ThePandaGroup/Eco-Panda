@@ -40,7 +40,7 @@ exports.updateUserEcoScore = functions.https.onCall(async (data, context) => {
   }
 
   const userId = context.auth.uid;
-  const ecoScoreUpdate = data.ecoScoreUpdate;
+  const ecoScoreUpdate = data.ecoScore;
   const userRef = admin.firestore().collection("users").doc(userId);
   const userDoc = await userRef.get();
 
