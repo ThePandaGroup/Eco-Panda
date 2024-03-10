@@ -1,9 +1,6 @@
 import 'package:eco_panda/firebase_options.dart';
 import 'package:eco_panda/floor_model/app_database.dart';
-import 'package:eco_panda/floor_model/app_entity.dart';
-import 'package:eco_panda/floor_model/app_entity_DAO.dart';
 import 'package:eco_panda/sync_manager.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -46,6 +43,38 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> navigationPage(WidgetTester tester) async {
+    await tester.tap(find.text('Walk'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(' Plan route'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> leaderboardPage(WidgetTester tester) async {
+    await tester.tap(find.text('See All Leaderboards'));
+    await tester.pumpAndSettle();
+
+    Finder refreshIconFinder = find.byIcon(Icons.refresh);
+    await tester.tap(refreshIconFinder);
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> challengesPage(WidgetTester tester) async {
+    await tester.tap(find.byIcon(Icons.emoji_events));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> profilePage(WidgetTester tester) async {
+    await tester.tap(find.byIcon(Icons.person));
+    await tester.pumpAndSettle();
+  }
+
   group('Application flow', () {
     testWidgets('Sign in with email and password', (tester) async {
       final AppDatabase localDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
@@ -64,8 +93,12 @@ void main() {
       await tester.pumpAndSettle();
 
       await initialPage(tester);
-
       await carbonHistoryPage(tester);
+      await navigationPage(tester);
+      await leaderboardPage(tester);
+
+      await challengesPage(tester);
+      await profilePage(tester);
     });
   });
 }
