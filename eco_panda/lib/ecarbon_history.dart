@@ -17,7 +17,7 @@ class ECarbonHistory extends StatefulWidget {
 class _ECarbonHistoryState extends State<ECarbonHistory> {
   double _currentMonthFootprint = 0.0;
   List<FlSpot> _historicalDataSpots = [];
-  List<double> _pastFootprints = [];
+  List<History> _pastFootprints = [];
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _ECarbonHistoryState extends State<ECarbonHistory> {
 
     setState(() {
       _currentMonthFootprint = currentMonthData!.historyCarbonFootprint.toDouble();
-      _pastFootprints = historyData.map((e) => e.historyCarbonFootprint.toDouble()).toList();
+      _pastFootprints = List.from(historyData.reversed);
       _historicalDataSpots = historyData.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.historyCarbonFootprint.toDouble())).toList();
     });
   }
@@ -118,8 +118,43 @@ class _ECarbonHistoryState extends State<ECarbonHistory> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text('Past Carbon Footprints', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    ..._pastFootprints.map((footprint) => ListTile(
-                      title: Text('$footprint tons'),
+                    const SizedBox(height: 20),
+                    ..._pastFootprints.map((entry) => Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.calendar_today, size: 20),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    entry.yearMonth,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  '${entry.historyCarbonFootprint} tons',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                const Icon(Icons.emoji_nature, size: 20),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const Divider(),
+                      ],
                     )).toList(),
                   ],
                 ),
