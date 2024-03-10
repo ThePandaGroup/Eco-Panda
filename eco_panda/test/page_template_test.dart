@@ -1,7 +1,4 @@
-import 'package:eco_panda/auth_gate.dart';
-import 'package:eco_panda/floor_model/app_database.dart';
 import 'package:eco_panda/page_template.dart';
-import 'package:eco_panda/sync_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,16 +8,39 @@ import 'package:mockito/mockito.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 
+class MockFirebaseApp extends Mock implements FirebaseApp {}
+
 void main() {
-  group('Firebase Auth with email and password', () {
-    test('Mock sign-in returns a user with an email', () async {
-      final mockAuth = MockFirebaseAuth(mockUser: MockUser(email: 'test@example.com'));
+  setUpAll(() async {
+  });
 
-      final result = await mockAuth.signInWithEmailAndPassword(email: 'test@example.com', password: 'password');
-      final user = result.user;
+  testWidgets('Successful sign-in navigates to EPageTemplate', (WidgetTester tester) async {
+    // Initialize your mocks
+    final MockFirebaseAuth mockAuth = MockFirebaseAuth();
+    final MockUser mockUser = MockUser();
 
-      expect(user!.email, equals('test@example.com'));
-    });
+    // Setup mock behavior
+    when(mockAuth.currentUser).thenReturn(mockUser);
+    when(mockUser.email).thenReturn('test@example.com');
+
+    // Build our app and trigger a frame with the mockProvider
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MultiProvider(
+          providers: [
+            Provider<FirebaseAuth>.value(value: mockAuth),
+            // Add other providers if necessary
+          ],
+          child: const MyApp(),
+        ),
+      ),
+    );
+
+    // Optionally, if you want to simulate sign-in, do it here and then pumpAndSettle
+    // await tester.pumpAndSettle();
+
+    // Check if EPageTemplate is displayed after sign-in
+    expect(find.byType(EPageTemplate), findsOneWidget);
   });
 }
 

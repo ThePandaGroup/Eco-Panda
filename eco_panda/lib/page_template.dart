@@ -1,11 +1,8 @@
-import 'package:eco_panda/sync_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import './ehomepage.dart';
 import './eprofile.dart';
 import './echallenges.dart';
-import 'floor_model/app_database.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   CustomAppBar({Key? key}) : preferredSize = Size.fromHeight(kToolbarHeight), super(key: key);
@@ -65,10 +62,6 @@ class _EPageTemplateState extends State<EPageTemplate> {
 
   @override
   Widget build(BuildContext context) {
-    final localDb = Provider.of<AppDatabase>(context, listen: false);
-    final manager = SyncManager(localDb);
-    manager.syncAll();
-
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
