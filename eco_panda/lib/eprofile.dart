@@ -5,21 +5,16 @@ import 'package:provider/provider.dart';
 import 'floor_model/app_database.dart';
 import 'floor_model/app_entity.dart';
 
-class EProfile extends StatefulWidget {
+class EProfile extends StatelessWidget {
   const EProfile({super.key});
 
   @override
-  State<EProfile> createState() => _EProfileState();
-}
-
-class _EProfileState extends State<EProfile> {
-  @override
   Widget build(BuildContext context) {
-    return const Padding(
-        padding: EdgeInsets.all(12.0),
-          child: Column(
-            children: [ProfileSetting(), RecentDestinationHistory()],
-          )
+    return const SingleChildScrollView(
+      padding: EdgeInsets.all(12.0),
+      child: Column(
+        children: [ProfileSetting(), RecentDestinationHistory()],
+      ),
     );
   }
 }
@@ -264,7 +259,7 @@ class _RecentDestinationHistoryState extends State<RecentDestinationHistory> {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     final destinations = await Provider.of<AppDatabase>(context, listen: false).destinationDao.retrieveDestinationsByUid(userId);
     setState(() {
-      _recentDestinations = List.from(destinations.reversed.take(2));
+      _recentDestinations = List.from(destinations.reversed);
     });
   }
 
@@ -285,29 +280,26 @@ class _RecentDestinationHistoryState extends State<RecentDestinationHistory> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-    _recentDestinations.isEmpty
+        _recentDestinations.isEmpty
             ? Center(child: Text("No recent destinations"))
-            :SingleChildScrollView(
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: _recentDestinations.length,
-        itemBuilder: (context, index) {
-          final destination = _recentDestinations[index];
-          return ListTile(
-            leading: Icon(Icons.location_pin),
-            title: Text(destination.address),
-            subtitle: Text("Earned Eco Score: ${destination.carbonFootprintScore}"),
-            trailing: IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () => _deleteDestination(destination),
-            ),
-          );
-        },
-      ),
-      ),
-
+            : ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: _recentDestinations.length,
+          itemBuilder: (context, index) {
+            final destination = _recentDestinations[index];
+            return ListTile(
+              leading: Icon(Icons.location_pin),
+              title: Text(destination.address),
+              subtitle: Text("Earned Eco Score: ${destination.carbonFootprintScore}"),
+              trailing: IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _deleteDestination(destination),
+              ),
+            );
+          },
+        ),
       ],
     );
   }
 }
-

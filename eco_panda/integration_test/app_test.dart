@@ -16,6 +16,8 @@ void main() {
     );
   });
 
+  String username = 'user_63396';
+
   Future<void> signIn(WidgetTester tester) async {
     final Finder emailField = find.widgetWithText(TextField, 'Email');
     await tester.enterText(emailField, 'test@gmail.com');
@@ -32,7 +34,7 @@ void main() {
   }
 
   Future<void> initialPage(WidgetTester tester) async {
-    expect(find.text('Welcome back, user_63396!'), findsOneWidget);
+    expect(find.text('Welcome back, $username!'), findsOneWidget);
   }
 
   Future<void> carbonHistoryPage(WidgetTester tester) async {
@@ -70,13 +72,48 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> profilePage(WidgetTester tester) async {
-    await tester.tap(find.byIcon(Icons.person));
+  Future<void> changeAvatar(WidgetTester tester) async {
+    await tester.tap(find.byType(CircleAvatar));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Choose Avatar'), findsOneWidget);
+    await tester.tap(find.byType(CircleAvatar).at(1));
     await tester.pumpAndSettle();
   }
 
+  Future<void> changeUsername(WidgetTester tester) async {
+    await tester.tap(find.byIcon(Icons.edit));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Change Username'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), username);
+
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> signOut(WidgetTester tester) async {
+    await tester.tap(find.text('Sign Out'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Are you sure you want to sign out?'), findsOneWidget);
+    await tester.tap(find.widgetWithText(TextButton, 'Sign Out'));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> profilePage(WidgetTester tester) async {
+    await tester.tap(find.byIcon(Icons.person));
+    await tester.pumpAndSettle();
+
+    await changeUsername(tester);
+    await Future.delayed(const Duration(seconds: 2));
+
+    await changeAvatar(tester);
+    await signOut(tester);
+  }
+
   group('Application flow', () {
-    testWidgets('Sign in with email and password', (tester) async {
+    testWidgets('Overall integration test', (tester) async {
       final AppDatabase localDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
       final syncManager = SyncManager(localDb);
       await tester.pumpWidget(MultiProvider(
