@@ -34,6 +34,7 @@ class _ECarbonHistoryState extends State<ECarbonHistory> {
 
     History? currentMonthData = await localDb.historyDao.retrieveHistoryByYearMonth(currentYearMonth, userId);
 
+    List<History> historyData = await localDb.historyDao.retrieveHistoriesByUid(userId);
     if (currentMonthData == null) {
       currentMonthData = History(
         yearMonth: currentYearMonth,
@@ -43,12 +44,10 @@ class _ECarbonHistoryState extends State<ECarbonHistory> {
       await localDb.historyDao.insertHistory(currentMonthData);
     }
 
-    List<History> historyData = await localDb.historyDao.retrieveHistoriesByUid(userId);
-
     setState(() {
       _currentMonthFootprint = currentMonthData!.historyCarbonFootprint.toDouble();
-      _pastFootprints = List.from(historyData.reversed);
       _historicalDataSpots = historyData.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.historyCarbonFootprint.toDouble())).toList();
+      _pastFootprints = List.from(historyData.reversed);
     });
   }
 
@@ -117,7 +116,7 @@ class _ECarbonHistoryState extends State<ECarbonHistory> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Past Carbon Footprints', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const Text('Past Carbon Footprints Saved', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 20),
                     ..._pastFootprints.map((entry) => Column(
                       children: [
@@ -142,7 +141,7 @@ class _ECarbonHistoryState extends State<ECarbonHistory> {
                             Row(
                               children: [
                                 Text(
-                                  '${entry.historyCarbonFootprint} tons',
+                                  '${entry.historyCarbonFootprint} pts',
                                   style: const TextStyle(
                                     fontSize: 16,
                                   ),
