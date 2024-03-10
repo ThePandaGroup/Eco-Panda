@@ -64,7 +64,7 @@ class _ECarbonHistoryState extends State<ECarbonHistory> {
               margin: const EdgeInsets.all(12.0),
               child: ListTile(
                 title: const Text('Current Month\'s Carbon Footprint'),
-                subtitle: Text('$_currentMonthFootprint tons'),
+                subtitle: Text('$_currentMonthFootprint pts'),
               ),
             ),
 

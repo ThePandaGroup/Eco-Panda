@@ -105,7 +105,6 @@ class SyncManager {
 
   Future<void> refreshChallenges(List<Challenge> newChallenges) async {
     final challengeDao = localDatabase.challengeDao;
-
     await challengeDao.deleteAllChallenges();
 
     for (var challenge in newChallenges) {
