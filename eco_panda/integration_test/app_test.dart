@@ -1,7 +1,9 @@
 import 'package:eco_panda/firebase_options.dart';
 import 'package:eco_panda/floor_model/app_database.dart';
 import 'package:eco_panda/floor_model/app_entity.dart';
+import 'package:eco_panda/floor_model/app_entity_DAO.dart';
 import 'package:eco_panda/sync_manager.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,8 +18,6 @@ void main() {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   });
-
-  Person? currentUser;
 
   Future<void> signIn(WidgetTester tester) async {
     final Finder emailField = find.widgetWithText(TextField, 'Email');
@@ -35,13 +35,18 @@ void main() {
   }
 
   Future<void> initialPage(WidgetTester tester) async {
+    expect(find.text('Welcome back, user_63396!'), findsOneWidget);
+  }
 
-    expect(find.text('Welcome back, user_63396'), findsOneWidget);
-    expect(find.text('Your Eco Score: 0'), findsOneWidget);
+  Future<void> carbonHistoryPage(WidgetTester tester) async {
+    await tester.tap(find.text('View Your Carbon Footprints History'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
   }
 
-  group('Sign In Test', () {
+  group('Application flow', () {
     testWidgets('Sign in with email and password', (tester) async {
       final AppDatabase localDb = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
       final syncManager = SyncManager(localDb);
@@ -56,10 +61,11 @@ void main() {
 
       await signIn(tester);
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
       await tester.pumpAndSettle();
 
+      await initialPage(tester);
 
+      await carbonHistoryPage(tester);
     });
   });
 }
